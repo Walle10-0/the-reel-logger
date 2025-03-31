@@ -30,6 +30,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['.localhost', '127.0.0.1', '[::1]'] # technically insecure
 
+MEDIA_ROOT = SECRET['django']['media_path']
+MEDIA_URL = "/media/"
 
 # Application definition
 

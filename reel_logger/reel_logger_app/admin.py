@@ -1,5 +1,9 @@
 from django.contrib import admin
 
-import reel_logger_app.models
+from reel_logger_app.models import Footage, Comment, Scene, Shot, Take
 
-admin.site.register(reel_logger_app.models.Footage)
+admin.site.register(Footage)
+admin.site.register(Comment)
+admin.site.register(Scene)
+admin.site.register(Shot)
+admin.site.register(Take)

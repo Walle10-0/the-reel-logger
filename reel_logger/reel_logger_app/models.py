@@ -1,7 +1,9 @@
 from django.db import models
 
+from reel_logger.settings import MEDIA_ROOT
+
 class Footage(models.Model):
-    path = models.FilePathField()
+    path = models.FilePathField(path='', blank=True, null=True, recursive=True)
     hash = models.CharField(max_length=32)
     length = models.DurationField()
     has_audio = models.BooleanField()
