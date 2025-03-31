@@ -34,6 +34,8 @@ ALLOWED_HOSTS = ['.localhost', '127.0.0.1', '[::1]'] # technically insecure
 # Application definition
 
 INSTALLED_APPS = [
+    'reel_logger',
+    'reel_logger_app.apps.ReelLoggerAppConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
