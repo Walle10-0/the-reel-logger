@@ -4,11 +4,13 @@
     <div class="container center">
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            <div class="mb-3">
-              <label for="formFile" class="form-label">Upload Files Here</label>
-              {{form}}
+            <h1>Upload File</h1>
+            <div>
+                <input type="file" name="posts" multiple>
             </div>
-            <button type="submit">Upload</button>
+            <div>
+                <button type="submit">Upload</button>
+            </div>
         </form>
     </div>
 </body>

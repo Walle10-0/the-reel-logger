@@ -1,14 +1,12 @@
 from django import forms
 
-from reel_logger_app.models import FootageUpload
-
-class UploadForm(forms.ModelForm):
-    footage = forms.FileField(widget = forms.TextInput(attrs={
-            "name": "images",
-            "type": "File",
-            "class": "form-control",
-            "multiple": "True",
-        }), label = "")
+from reel_logger_app.models import Footage
+ 
+# create a ModelForm
+class FootageForm(forms.ModelForm):
+    # specify the name of model to use
     class Meta:
-        model = FootageUpload
-        fields = ['footage']
+        model = Footage
+        fields = "__all__"
+        exclude = ['path']
+

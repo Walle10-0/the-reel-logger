@@ -85,11 +85,11 @@ WSGI_APPLICATION = 'reel_logger.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+    'alternative': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     },
-    "other": {
+    "default": {
         "ENGINE": "django.db.backends.mysql",
         "NAME": SECRET['database']['name'],
         "USER": SECRET['database']['user'],

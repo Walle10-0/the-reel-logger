@@ -1,5 +1,6 @@
 from django.db import models
 from hashlib import md5 as hash
+import datetime 
 
 from reel_logger.settings import MEDIA_ROOT
 
@@ -9,7 +10,7 @@ def get_footage_root():
 class Footage(models.Model):
     path = models.FilePathField(path=get_footage_root, blank=False, null=False, recursive=True, unique=True)
     hash = models.CharField(max_length=32, blank=True, editable=False)
-    length = models.DurationField(blank=True, default=0)
+    length = models.DurationField(blank=True, default=datetime.timedelta(0))
     has_audio = models.BooleanField(default=False)
     has_video = models.BooleanField(default=False)
     notes = models.TextField(blank=True)
@@ -47,9 +48,3 @@ class Take(models.Model):
     marked_take = models.PositiveSmallIntegerField()
     rating = models.SmallIntegerField()
     notes = models.TextField(blank=True)
-
-class FootageUpload(models.Model):
-    footage = models.FileField(upload_to='footage/unlogged/')
-
-    class Meta:
-        db_table = "reel_logger_app_footage_upload"
