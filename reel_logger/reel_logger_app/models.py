@@ -15,8 +15,6 @@ class Footage(models.Model):
     has_video = models.BooleanField(default=False)
     notes = models.TextField(blank=True)
 
-    takes = None
-
     def save(self, *args, **kwargs):
         print(self.path)
         with open(self.path, "rb") as file:
@@ -33,18 +31,25 @@ class Scene(models.Model):
     title = models.CharField(max_length=128)
     description = models.TextField(blank=True)
 
+    def __str__(self):
+        return str(self.script_number) + ' - ' + self.title
+
 class Shot(models.Model):
     scene = models.ForeignKey(Scene, on_delete=models.CASCADE)
     shot = models.CharField(max_length=64)
     description = models.TextField(blank=True)
 
+    def __str__(self):
+        return str(self.scene.script_number) + ' ' + self.shot
+
 class Take(models.Model):
-    footage = models.ManyToManyRel(field="takes", to=Footage)
+    footage = models.ManyToManyField(Footage, symmetrical=False, related_name='takes')
+
     shot = models.ForeignKey(Shot, on_delete=models.CASCADE)
     take_no = models.PositiveSmallIntegerField()
     start_time = models.DurationField()
-    marked_scene = models.PositiveSmallIntegerField()
-    marked_shot = models.CharField(max_length=64)
-    marked_take = models.PositiveSmallIntegerField()
-    rating = models.SmallIntegerField()
+    marked_scene = models.PositiveSmallIntegerField(blank=True)
+    marked_shot = models.CharField(max_length=64, blank=True)
+    marked_take = models.PositiveSmallIntegerField(blank=True)
+    rating = models.SmallIntegerField(blank=True)
     notes = models.TextField(blank=True)

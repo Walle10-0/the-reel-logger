@@ -7,5 +7,7 @@ from . import views
 urlpatterns = [
     path("", views.index, name="index"),
     path('upload', views.fileupload, name = "File_Uploads"),
-    path("<int:footage_id>/edit/", views.editFootage, name="Footage_Editor"),
+    path("footage/<int:footage_id>/edit/", views.editFootage, name="Footage_Editor"),
+    path('scene/new', views.createScene, name = "Create_Scene"),
+    path('shot/new', views.createShot, name = "Create_Shot"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
