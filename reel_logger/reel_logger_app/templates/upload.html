@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <div class="container center">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="formFile" class="form-label">Upload Files Here</label>
+              {{form}}
+            </div>
+            <button type="submit">Upload</button>
+        </form>
+    </div>
+</body>
+</html>

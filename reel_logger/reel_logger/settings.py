@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import toml
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,6 +33,9 @@ ALLOWED_HOSTS = ['.localhost', '127.0.0.1', '[::1]'] # technically insecure
 
 MEDIA_ROOT = SECRET['django']['media_path']
 MEDIA_URL = "/media/"
+
+if not os.path.exists(MEDIA_ROOT):
+    os.makedirs(MEDIA_ROOT)  # Ensure the directory exists
 
 # Application definition
 

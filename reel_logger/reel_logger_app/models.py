@@ -2,8 +2,11 @@ from django.db import models
 
 from reel_logger.settings import MEDIA_ROOT
 
+def get_footage_root():
+    return MEDIA_ROOT + "footage/"
+
 class Footage(models.Model):
-    path = models.FilePathField(path='', blank=True, null=True, recursive=True)
+    path = models.FilePathField(path=get_footage_root, blank=True, null=True, recursive=True)
     hash = models.CharField(max_length=32)
     length = models.DurationField()
     has_audio = models.BooleanField()
@@ -38,3 +41,8 @@ class Take(models.Model):
     rating = models.SmallIntegerField()
     notes = models.TextField()
 
+class FootageUpload(models.Model):
+    footage = models.FileField(upload_to='footage/unlogged/')
+
+    class Meta:
+        db_table = "reel_logger_app_footage_upload"
