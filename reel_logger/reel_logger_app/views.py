@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.core.files.storage import default_storage
 from django.contrib import messages
 
-from reel_logger_app.models import Footage, Comment, Scene, Shot, Take
+from reel_logger_app.models import Footage, Comment, Scene, Shot, Take, FootageTake
 from reel_logger_app.forms import FootageForm, TakeForm, SceneForm, ShotForm
 
 def index(request):
@@ -11,15 +11,21 @@ def index(request):
 
 def fileupload(request):    
     if request.method == 'POST':
+        first = ""
         for file in request.FILES.getlist('posts'):
             print(file)
+
             new_filename = default_storage.generate_filename("footage/unlogged/" + file.name)
             new_filename = default_storage.save(new_filename, file)
             full_filename = default_storage.location + '/' + new_filename
             print(full_filename)
+
             newfoot = Footage.objects.create(path=full_filename)
+
+            if first == "":
+                first = str(newfoot.id) + "/edit/"
         messages.success(request, 'The files have been uploaded successfully.')
-        return redirect(str(newfoot.id) + "/edit/")
+        return redirect(first)
     return render(request, "upload.html")
 
 def editFootage(request, footage_id):
@@ -37,10 +43,9 @@ def editFootage(request, footage_id):
     else:
         form = FootageForm(instance=footage)
 
-    takes = Take.objects.filter(footage=footage)
-    takes = TakeForm()
+    takes = FootageTake.objects.filter(footage=footage)
 
-    print(form.is_bound)
+    print(takes)
 
     context = {'form': form, 'takes': takes}
     return render(request, "form_edit.html", context)

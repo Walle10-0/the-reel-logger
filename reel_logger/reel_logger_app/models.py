@@ -27,7 +27,7 @@ class Comment(models.Model):
     comment = models.TextField()
 
 class Scene(models.Model):
-    script_number = models.PositiveSmallIntegerField(unique=True)
+    script_number = models.PositiveSmallIntegerField(primary_key=True)
     title = models.CharField(max_length=128)
     description = models.TextField(blank=True)
 
@@ -35,6 +35,7 @@ class Scene(models.Model):
         return str(self.script_number) + ' - ' + self.title
 
 class Shot(models.Model):
+    pk = models.CompositePrimaryKey("scene_id", "shot")
     scene = models.ForeignKey(Scene, on_delete=models.CASCADE)
     shot = models.CharField(max_length=64)
     description = models.TextField(blank=True)
@@ -43,13 +44,34 @@ class Shot(models.Model):
         return str(self.scene.script_number) + ' ' + self.shot
 
 class Take(models.Model):
-    footage = models.ManyToManyField(Footage, symmetrical=False, related_name='takes')
+    pk = models.CompositePrimaryKey("shot_scene", "shot_name", "take_no")
 
-    shot = models.ForeignKey(Shot, on_delete=models.CASCADE)
+    shot_scene = models.ForeignKey(Scene, on_delete=models.CASCADE)
+    shot_name = models.CharField(max_length=64)
+    shot = models.ForeignObject(Shot,
+                                on_delete=models.CASCADE,
+                                from_fields=("shot_scene", "shot_name"),
+                                to_fields=("scene_id", "shot"))
+    
     take_no = models.PositiveSmallIntegerField()
-    start_time = models.DurationField()
     marked_scene = models.PositiveSmallIntegerField(blank=True)
     marked_shot = models.CharField(max_length=64, blank=True)
     marked_take = models.PositiveSmallIntegerField(blank=True)
     rating = models.SmallIntegerField(blank=True)
     notes = models.TextField(blank=True)
+
+class FootageTake(models.Model):
+    pk = models.CompositePrimaryKey("footage_id", "take_scene", "take_shot", "take_no")
+
+    footage = models.ForeignKey(Footage, on_delete=models.CASCADE)
+    take_scene = models.ForeignKey(Scene, on_delete=models.CASCADE)
+    take_shot = models.CharField(max_length=64)
+    take_no = models.PositiveSmallIntegerField()
+    take = models.ForeignObject(Take,
+                                on_delete=models.CASCADE,
+                                from_fields=("take_scene", "take_shot", "take_no"),
+                                to_fields=("shot_scene", "shot_name", "take_no"))
+
+    start_time = models.DurationField()
+
+
