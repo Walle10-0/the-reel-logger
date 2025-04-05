@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <a href="/app/scene">all scenes</a> 
+  <h1>Scene {{form.instance.script_number}}</h1>
+  <h2>{{form.instance.title}}</h2>
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div>
+        {{form}}
+      </div>
+      <button type="submit">Edit</button>
+  </form>
+  <form action="scene/{{form.instance.script_number}}/delete" method="POST">
+    {% csrf_token %}
+    <button type="submit">Delete</button>
+  </form>
+  <h1>Shot List</h1>
+  <ul>
+      {% for shot in list %}
+        <li>
+          <a href="shot/{{ shot.shot }}">{{ shot }}</a> 
+          <form action="shot/{{shot.shot}}/delete" method="POST">
+            {% csrf_token %}
+            <button type="submit">Delete</button>
+          </form>
+        </li>
+      {% endfor %}
+  </ul>
+</body>
+</html>

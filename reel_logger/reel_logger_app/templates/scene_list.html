@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h1>Scene List</h1>
+    <ul>
+        {% for scene in list %}
+          <li>
+            <a href="scene/{{ scene.script_number }}">{{ scene }}</a> 
+            <form action="scene/{{scene.script_number}}/delete" method="POST">
+              {% csrf_token %}
+              <button type="submit">Delete</button>
+            </form>
+          </li>
+        {% endfor %}
+    </ul>
+    <h1>Add Scene</h1>
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div>
+        {{form}}
+      </div>
+      <button type="submit">Submit</button>
+  </form>
+</body>
+</html>
