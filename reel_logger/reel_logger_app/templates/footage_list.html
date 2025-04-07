@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h1>Footage List</h1>
+    <ul>
+        {% for footage in list %}
+          <li>
+            <a href="{% url 'Footage_Editor' footage.id %}">{{ footage }}</a> 
+          </li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'File_Uploads' %}">Upload Footage</a> 
+</body>
+</html>

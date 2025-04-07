@@ -7,7 +7,8 @@ from . import views
 urlpatterns = [
     path("", views.index, name="index"),
     path('upload', views.fileupload, name = "File_Uploads"),
-    path("footage/<int:footage_id>/edit/", views.editFootage, name="Footage_Editor"),
+    path('footage', views.viewFootage, name = "View_Footage"),
+    path("footage/<int:footage_id>/edit", views.editFootage, name="Footage_Editor"),
     path('scene', views.viewScenes, name = "View_Scenes"),
     path("scene/<int:script_number>/", views.editScene, name="Scene_Editor"),
     path("scene/<int:script_number>/delete", views.deleteScene, name="Delete_Scene"),

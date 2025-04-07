@@ -7,7 +7,7 @@ from reel_logger_app.models import Footage, Comment, Scene, Shot, Take, FootageT
 from reel_logger_app.forms import FootageForm, TakeForm, SceneForm, ShotForm, NewSceneForm, ShotInSceneForm
 
 def index(request):
-    return HttpResponse("Hello, world. You're at the index.")
+    return render(request, "index.html")
 
 def fileupload(request):    
     if request.method == 'POST':
@@ -28,6 +28,12 @@ def fileupload(request):
         return redirect(first)
     return render(request, "upload.html")
 
+def viewFootage(request):
+    footage_list = Footage.objects.order_by("path")
+
+    context = {"list": footage_list}
+    return render(request, "footage_list.html", context)
+
 def editFootage(request, footage_id):
     footage = get_object_or_404(Footage, pk=footage_id)
 
@@ -40,7 +46,7 @@ def editFootage(request, footage_id):
             form.save()
         else:
             messages.error(request, 'Please correct the following errors:')
-            return render(request,'form_edit.html',{'form':form})
+            #return render(request,'form_edit.html',{'form':form})
     else:
         form = FootageForm(instance=footage)
 
@@ -49,7 +55,7 @@ def editFootage(request, footage_id):
     print(takes)
 
     context = {'form': form, 'takes': takes}
-    return render(request, "form_edit.html", context)
+    return render(request, "footage_edit.html", context)
 
 def viewScenes(request):
     scene_list = Scene.objects.order_by("script_number")
