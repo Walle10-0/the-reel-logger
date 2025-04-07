@@ -15,11 +15,18 @@ class Footage(models.Model):
     has_video = models.BooleanField(default=False)
     notes = models.TextField(blank=True)
 
+    # takes in 'take_set' 
+    # footagetake in 'footagetake_set' (I think)
+
     def save(self, *args, **kwargs):
         print(self.path)
         with open(self.path, "rb") as file:
             self.hash = hash(file.read()).hexdigest()
         super(Footage, self).save(*args, **kwargs)
+    
+    # custom print method
+    def __str__(self):
+        return "Footage('" + str(self.path) + "')"
 
 class Comment(models.Model):
     footage = models.ForeignKey(Footage, on_delete=models.CASCADE)
@@ -59,6 +66,12 @@ class Take(models.Model):
     marked_take = models.PositiveSmallIntegerField(blank=True)
     rating = models.SmallIntegerField(blank=True)
     notes = models.TextField(blank=True)
+
+    footage = models.ManyToManyField(
+        Footage,
+        through="FootageTake",
+        through_fields=("take", "footage"),
+    )
 
 class FootageTake(models.Model):
     pk = models.CompositePrimaryKey("footage_id", "take_scene", "take_shot", "take_no")
