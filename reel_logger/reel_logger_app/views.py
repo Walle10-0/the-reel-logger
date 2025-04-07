@@ -4,7 +4,7 @@ from django.core.files.storage import default_storage
 from django.contrib import messages
 
 from reel_logger_app.models import Footage, Comment, Scene, Shot, Take, FootageTake
-from reel_logger_app.forms import FootageForm, TakeForm, SceneForm, ShotForm, NewSceneForm, ShotInSceneForm
+from reel_logger_app.forms import FootageForm, TakeForm, SceneForm, ShotForm, NewSceneForm, ShotInSceneForm, AddTakeToFootageForm
 
 def index(request):
     return render(request, "index.html")
@@ -49,12 +49,10 @@ def editFootage(request, footage_id):
             #return render(request,'form_edit.html',{'form':form})
     else:
         form = FootageForm(instance=footage)
+    
+    take_to_footage = AddTakeToFootageForm(initial={'footage': footage})
 
-    takes = FootageTake.objects.filter(footage=footage)
-
-    print(takes)
-
-    context = {'form': form, 'takes': takes}
+    context = {'form': form, "take_to_footage": take_to_footage}
     return render(request, "footage_edit.html", context)
 
 def viewScenes(request):
@@ -154,3 +152,21 @@ def editShot(request, scene_id, shot):
     
     context = {'form': form}
     return render(request, "generic.html", context)
+
+def AddTakeToFootage(request, footage_id):
+    if request.method == 'POST':
+        form = AddTakeToFootageForm(request.POST)
+        form.instance.footage_id = footage_id
+        # check if form data is valid
+        if form.is_valid():
+            # create if not exists
+            Take.objects.get_or_create(
+                shot_scene = form.instance.take_scene,
+                shot_name = form.instance.take_shot,
+                take_no = form.instance.take_no)
+            
+            form.save()
+            messages.info(request, "take saved !!!")
+        else:
+            messages.error(request, 'Please correct the following errors:')
+    return redirect('Footage_Editor', footage_id)

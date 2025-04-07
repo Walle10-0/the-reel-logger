@@ -64,7 +64,7 @@ class Take(models.Model):
     marked_scene = models.PositiveSmallIntegerField(blank=True)
     marked_shot = models.CharField(max_length=64, blank=True)
     marked_take = models.PositiveSmallIntegerField(blank=True)
-    rating = models.SmallIntegerField(blank=True)
+    rating = models.SmallIntegerField(blank=True, default=0)
     notes = models.TextField(blank=True)
 
     footage = models.ManyToManyField(
@@ -72,6 +72,15 @@ class Take(models.Model):
         through="FootageTake",
         through_fields=("take", "footage"),
     )
+
+    def save(self, *args, **kwargs):
+        if not self.marked_scene:
+            self.marked_scene = self.shot_scene_id
+        if not self.marked_shot:
+            self.marked_shot = self.shot_name
+        if not self.marked_take:
+            self.marked_take = self.take_no
+        super(Take, self).save(*args, **kwargs)
 
 class FootageTake(models.Model):
     pk = models.CompositePrimaryKey("footage_id", "take_scene", "take_shot", "take_no")

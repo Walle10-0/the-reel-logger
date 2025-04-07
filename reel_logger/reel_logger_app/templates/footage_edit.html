@@ -15,6 +15,17 @@
             </div>
             <button type="submit">Submit</button>
         </form>
+        <h2>Takes</h2>
+        <h3>Add Take</h3>
+        <form action="{% url 'Add_Take_To_Footage' form.instance.pk %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div>
+              {{take_to_footage}}
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+        <h2>Comments</h2>
+        <h3>Add Comment</h3>
     </div>
 </body>
 </html>
