@@ -2,9 +2,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.core.files.storage import default_storage
 from django.contrib import messages
+from django.forms import modelformset_factory
+
 
 from reel_logger_app.models import Footage, Comment, Scene, Shot, Take, FootageTake
 from reel_logger_app.forms import FootageForm, TakeForm, SceneForm, ShotForm, NewSceneForm, ShotInSceneForm, AddTakeToFootageForm
+
+AuthorFormSet = modelformset_factory(Take, exclude=["footage"], extra=0, can_delete=True)
 
 def index(request):
     return render(request, "index.html")
@@ -51,8 +55,9 @@ def editFootage(request, footage_id):
         form = FootageForm(instance=footage)
     
     take_to_footage = AddTakeToFootageForm(initial={'footage': footage})
+    all_takes = AuthorFormSet(queryset=footage.take_set.all())
 
-    context = {'form': form, "take_to_footage": take_to_footage}
+    context = {'form': form, "take_to_footage": take_to_footage, "takes": all_takes}
     return render(request, "footage_edit.html", context)
 
 def viewScenes(request):
