@@ -4,7 +4,7 @@ from django.core.files.storage import default_storage
 from django.contrib import messages
 
 from reel_logger_app.models import Footage, Comment, Scene, Shot, Take, FootageTake
-from reel_logger_app.forms import FootageForm, TakeForm, SceneForm, ShotForm
+from reel_logger_app.forms import FootageForm, TakeForm, SceneForm, ShotForm, NewSceneForm, ShotInSceneForm
 
 def index(request):
     return HttpResponse("Hello, world. You're at the index.")
@@ -42,7 +42,7 @@ def editFootage(request, footage_id):
             messages.error(request, 'Please correct the following errors:')
             return render(request,'form_edit.html',{'form':form})
     else:
-        form = FootageForm(instance=footage, exclude="script_number")
+        form = FootageForm(instance=footage)
 
     takes = FootageTake.objects.filter(footage=footage)
 
@@ -55,17 +55,17 @@ def viewScenes(request):
     scene_list = Scene.objects.order_by("script_number")
 
     if request.method == 'POST':
-        form = SceneForm(request.POST)
+        form = NewSceneForm(request.POST)
         # check if form data is valid
         if form.is_valid():
             # save the form data to model
             form.save()
-            form = SceneForm()
+            form = NewSceneForm()
             return redirect('View_Scenes')
         else:
             messages.error(request, 'Please correct the following errors:')
     else:
-        form = SceneForm()
+        form = NewSceneForm()
 
     context = {"list": scene_list, "form": form}
     return render(request, "scene_list.html", context)
@@ -83,7 +83,7 @@ def editScene(request, script_number):
 
     if request.method == 'POST':
         form = SceneForm(request.POST, instance=scene)
-        
+
         if form.is_valid():
             # save the form data to model
             form.save()
@@ -92,7 +92,7 @@ def editScene(request, script_number):
     else:
         form = SceneForm(instance=scene)
     
-    shot_form = ShotForm()
+    shot_form = ShotInSceneForm(initial={'scene': scene})
 
     context = {"list": shot_list, "form": form, "shot_form": shot_form}
     return render(request, "scene_edit.html", context)
@@ -109,5 +109,42 @@ def createShot(request):
     else:
         form = ShotForm()
 
+    context = {'form': form}
+    return render(request, "generic.html", context)
+
+def deleteShot(request, scene_id, shot):
+    if request.method == 'POST':
+        item = get_object_or_404(Shot, scene_id=scene_id, shot=shot)
+        item.delete()
+        messages.info(request, "shot removed !!!")
+    return redirect('Scene_Editor', scene_id)
+
+def addShotToScene(request, scene_id):
+    if request.method == 'POST':
+        form = ShotInSceneForm(request.POST)
+        form.instance.scene_id = scene_id
+        # check if form data is valid
+        if form.is_valid():
+            # save the form data to model
+            form.save()
+            messages.info(request, "shot saved !!!")
+        else:
+            messages.error(request, 'Please correct the following errors:')
+    return redirect('Scene_Editor', scene_id)
+
+def editShot(request, scene_id, shot):
+    shot = get_object_or_404(Shot, scene_id=scene_id, shot=shot)
+
+    if request.method == 'POST':
+        form = ShotForm(request.POST, instance=shot)
+
+        if form.is_valid():
+            # save the form data to model
+            form.save()
+        else:
+            messages.error(request, 'Please correct the following errors:')
+    else:
+        form = ShotForm(instance=shot)
+    
     context = {'form': form}
     return render(request, "generic.html", context)

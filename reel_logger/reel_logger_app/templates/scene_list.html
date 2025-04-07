@@ -5,8 +5,8 @@
     <ul>
         {% for scene in list %}
           <li>
-            <a href="scene/{{ scene.script_number }}">{{ scene }}</a> 
-            <form action="scene/{{scene.script_number}}/delete" method="POST">
+            <a href="{% url 'Scene_Editor' scene.script_number %}">{{ scene }}</a> 
+            <form action="{% url 'Delete_Scene' scene.script_number %}" method="POST">
               {% csrf_token %}
               <button type="submit">Delete</button>
             </form>

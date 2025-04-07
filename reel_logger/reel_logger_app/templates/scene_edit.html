@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <body>
-  <a href="/app/scene">all scenes</a> 
+  <a href="{% url 'View_Scenes' %}">all scenes</a> 
   <h1>Scene {{form.instance.script_number}}</h1>
   <h2>{{form.instance.title}}</h2>
     <form method="POST" enctype="multipart/form-data">
@@ -11,7 +11,7 @@
       </div>
       <button type="submit">Edit</button>
   </form>
-  <form action="scene/{{form.instance.script_number}}/delete" method="POST">
+  <form action="{% url 'Delete_Scene' form.instance.script_number %}" method="POST">
     {% csrf_token %}
     <button type="submit">Delete</button>
   </form>
@@ -19,13 +19,21 @@
   <ul>
       {% for shot in list %}
         <li>
-          <a href="shot/{{ shot.shot }}">{{ shot }}</a> 
-          <form action="shot/{{shot.shot}}/delete" method="POST">
+          <a href="{% url 'Shot_Editor' shot.scene_id shot.shot %}">{{ shot }}</a> 
+          <form action="{% url 'Delete_Shot' shot.scene_id shot.shot %}" method="POST">
             {% csrf_token %}
             <button type="submit">Delete</button>
           </form>
         </li>
       {% endfor %}
   </ul>
+  <h1>Add Shot</h1>
+  <form action="{% url 'Add_Shot_To_Scene' form.instance.script_number %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div>
+       {{shot_form}}
+    </div>
+    <button type="submit">Add</button>
+  </form>
 </body>
 </html>

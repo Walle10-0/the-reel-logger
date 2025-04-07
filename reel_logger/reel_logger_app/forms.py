@@ -16,24 +16,25 @@ class TakeForm(forms.ModelForm):
         model = Take
         fields = "__all__"
 
-class SceneForm(forms.ModelForm):
+class NewSceneForm(forms.ModelForm):
     class Meta:
         model = Scene
         fields = "__all__"
-    
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
 
-        # If instance exists (i.e., editing), disable or hide the ID field
-        if self.instance and self.instance.pk:
-            self.fields['script_number'].disabled = True
+class SceneForm(forms.ModelForm):
+    # specify the name of model to use
+    class Meta:
+        model = Scene
+        fields = "__all__"
+        exclude = ['script_number']
 
 class ShotForm(forms.ModelForm):
     class Meta:
         model = Shot
         fields = "__all__"
 
-class ShotForm(forms.ModelForm):
+class ShotInSceneForm(forms.ModelForm):
     class Meta:
         model = Shot
         fields = "__all__"
+        exclude = ['scene']
