@@ -8,6 +8,15 @@ import datetime
 from reel_logger_app.models import Footage, Comment, Scene, Shot, Take, FootageTake
 from reel_logger_app.forms import FootageForm, TakeForm, SceneForm, ShotForm, NewSceneForm, ShotInSceneForm, AddTakeToFootageForm, TakeInFootageForm
 
+def simple_save_if_valid(form, request):
+    # check if form data is valid
+    if form.is_valid():
+        # save the form data to model
+        form.save()
+        messages.info(request, "saved successfully!!!")
+    else:
+        messages.error(request, 'Please correct the following errors:')
+
 def index(request):
     return render(request, "index.html")
 
@@ -41,14 +50,7 @@ def editFootage(request, footage_id):
 
     if request.method == 'POST':
         form = FootageForm(request.POST, instance=footage)
-
-        # check if form data is valid
-        if form.is_valid():
-            # save the form data to model
-            form.save()
-        else:
-            messages.error(request, 'Please correct the following errors:')
-            #return render(request,'form_edit.html',{'form':form})
+        simple_save_if_valid(form, request)
     else:
         form = FootageForm(instance=footage)
     
@@ -63,6 +65,8 @@ def editFootage(request, footage_id):
 
     context = {'form': form, "take_to_footage": take_to_footage, "takes": all_takes}
     return render(request, "footage_edit.html", context)
+
+# ------------ scene ------------------
 
 def viewScenes(request):
     scene_list = Scene.objects.order_by("script_number")
@@ -97,11 +101,7 @@ def editScene(request, script_number):
     if request.method == 'POST':
         form = SceneForm(request.POST, instance=scene)
 
-        if form.is_valid():
-            # save the form data to model
-            form.save()
-        else:
-            messages.error(request, 'Please correct the following errors:')
+        simple_save_if_valid(form, request)
     else:
         form = SceneForm(instance=scene)
     
@@ -110,15 +110,13 @@ def editScene(request, script_number):
     context = {"list": shot_list, "form": form, "shot_form": shot_form}
     return render(request, "scene_edit.html", context)
 
+# ------------ shot ------------------
+
 def createShot(request):
     if request.method == 'POST':
         form = ShotForm(request.POST)
-        # check if form data is valid
-        if form.is_valid():
-            # save the form data to model
-            form.save()
-        else:
-            messages.error(request, 'Please correct the following errors:')
+        
+        simple_save_if_valid(form, request)
     else:
         form = ShotForm()
 
@@ -136,13 +134,8 @@ def addShotToScene(request, scene_id):
     if request.method == 'POST':
         form = ShotInSceneForm(request.POST)
         form.instance.scene_id = scene_id
-        # check if form data is valid
-        if form.is_valid():
-            # save the form data to model
-            form.save()
-            messages.info(request, "shot saved !!!")
-        else:
-            messages.error(request, 'Please correct the following errors:')
+        
+        simple_save_if_valid(form, request)
     return redirect('Scene_Editor', scene_id)
 
 def editShot(request, scene_id, shot):
@@ -151,16 +144,14 @@ def editShot(request, scene_id, shot):
     if request.method == 'POST':
         form = ShotForm(request.POST, instance=shot)
 
-        if form.is_valid():
-            # save the form data to model
-            form.save()
-        else:
-            messages.error(request, 'Please correct the following errors:')
+        simple_save_if_valid(form, request)
     else:
         form = ShotForm(instance=shot)
     
     context = {'form': form}
     return render(request, "generic.html", context)
+
+# ------------ FootageTake ------------------
 
 def addTakeToFootage(request, footage_id):
     if request.method == 'POST':
@@ -206,13 +197,3 @@ def editFootageTake(request, footage_id, take_scene, take_shot, take_no):
         else:
             messages.error(request, 'Please correct the following errors:')
         return redirect('Footage_Editor', footage_id)
-
-def deleteTake(request, shot_scene, shot_name, take_no, redirect_footage=None):
-    if request.method == 'POST':
-        item = get_object_or_404(Take, shot_scene=shot_scene, shot_name=shot_name, take_no=take_no)
-        item.delete()
-        messages.info(request, "take removed !!!")
-    if redirect_footage:
-        return redirect('Footage_Editor', redirect_footage)
-    else:
-        return redirect('index')
