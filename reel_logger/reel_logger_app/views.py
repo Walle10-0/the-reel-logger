@@ -42,6 +42,8 @@ def fileupload(request):
         return redirect(first)
     return render(request, "upload.html")
 
+# ------------ footage ------------------
+
 def viewFootage(request):
     footage_list = Footage.objects.order_by("path")
 
