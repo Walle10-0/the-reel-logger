@@ -5,7 +5,6 @@ from django.contrib import messages
 from django.views.generic.edit import DeleteView
 from django.urls import reverse_lazy
 
-
 import datetime
 
 from reel_logger_app.models import Footage, Comment, Scene, Shot, Take, FootageTake
@@ -70,6 +69,10 @@ def editFootage(request, footage_id):
 
     context = {'form': form, "take_to_footage": take_to_footage, "takes": all_takes}
     return render(request, "footage_edit.html", context)
+
+class FootageDeleteView(DeleteView):
+    model = Footage
+    success_url = reverse_lazy('View_Footage')
 
 # ------------ scene ------------------
 
@@ -199,3 +202,9 @@ def editFootageTake(request, footage_id, take_scene, take_shot, take_no):
         else:
             messages.error(request, 'Please correct the following errors:')
         return redirect('Footage_Editor', footage_id)
+
+# ------------ Comment ------------------
+
+class CommentDeleteView(DeleteView):
+    model = Comment
+    success_url = reverse_lazy('View_Footage')
