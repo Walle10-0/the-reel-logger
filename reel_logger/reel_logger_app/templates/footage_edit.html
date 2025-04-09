@@ -19,6 +19,7 @@
         <ul>
             {% for take in takes %}
               <li>
+                <div><b>Scene {{take.instance.shot_scene_id}}{{take.instance.shot_name}} Take {{take.instance.take_no}}</b></div>
                 <form action="{% url 'Edit_Take_In_Footage' form.instance.pk take.instance.shot_scene_id take.instance.shot_name take.instance.take_no %}" method="POST">
                   {% csrf_token %}
                   {{take}}

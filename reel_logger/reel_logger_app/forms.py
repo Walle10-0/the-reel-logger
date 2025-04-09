@@ -52,4 +52,4 @@ class TakeInFootageForm(forms.ModelForm):
     class Meta:
         model = Take
         fields = "__all__"
-        exclude = ['footage']
+        exclude = ['footage', 'shot_scene', 'shot_name', 'take_no']

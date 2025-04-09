@@ -190,7 +190,6 @@ def deleteFootageTake(request, footage_id, take_scene, take_shot, take_no):
 def editFootageTake(request, footage_id, take_scene, take_shot, take_no):
     if request.method == 'POST':
         link = get_object_or_404(FootageTake, take_scene=take_scene, take_shot=take_shot, take_no=take_no, footage_id=footage_id)
-        take = get_object_or_404(FootageTake, take_scene=take_scene, take_shot=take_shot, take_no=take_no)
         form = TakeInFootageForm(request.POST)
         
         # save other information
