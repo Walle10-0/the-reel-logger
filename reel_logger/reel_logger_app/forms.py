@@ -45,3 +45,11 @@ class AddTakeToFootageForm(forms.ModelForm):
         model = FootageTake
         fields = "__all__"
         exclude = ['footage']
+
+class TakeInFootageForm(forms.ModelForm):
+    start_time = forms.DurationField()
+
+    class Meta:
+        model = Take
+        fields = "__all__"
+        exclude = ['footage']

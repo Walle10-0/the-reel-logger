@@ -2,13 +2,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.core.files.storage import default_storage
 from django.contrib import messages
-from django.forms import modelformset_factory
 
+import datetime
 
 from reel_logger_app.models import Footage, Comment, Scene, Shot, Take, FootageTake
-from reel_logger_app.forms import FootageForm, TakeForm, SceneForm, ShotForm, NewSceneForm, ShotInSceneForm, AddTakeToFootageForm
-
-AuthorFormSet = modelformset_factory(Take, exclude=["footage"], extra=0, can_delete=True)
+from reel_logger_app.forms import FootageForm, TakeForm, SceneForm, ShotForm, NewSceneForm, ShotInSceneForm, AddTakeToFootageForm, TakeInFootageForm
 
 def index(request):
     return render(request, "index.html")
@@ -55,7 +53,13 @@ def editFootage(request, footage_id):
         form = FootageForm(instance=footage)
     
     take_to_footage = AddTakeToFootageForm(initial={'footage': footage})
-    all_takes = AuthorFormSet(queryset=footage.take_set.all())
+
+    # get all take forms
+    all_takes = []
+    for take in footage.take_set.all():
+        start = FootageTake.objects.get(footage=footage, take=take).start_time
+        newTakeForm = TakeInFootageForm(instance=take, initial={"start_time": start})
+        all_takes.append(newTakeForm)
 
     context = {'form': form, "take_to_footage": take_to_footage, "takes": all_takes}
     return render(request, "footage_edit.html", context)
@@ -158,7 +162,7 @@ def editShot(request, scene_id, shot):
     context = {'form': form}
     return render(request, "generic.html", context)
 
-def AddTakeToFootage(request, footage_id):
+def addTakeToFootage(request, footage_id):
     if request.method == 'POST':
         form = AddTakeToFootageForm(request.POST)
         form.instance.footage_id = footage_id
@@ -175,3 +179,41 @@ def AddTakeToFootage(request, footage_id):
         else:
             messages.error(request, 'Please correct the following errors:')
     return redirect('Footage_Editor', footage_id)
+
+def deleteFootageTake(request, footage_id, take_scene, take_shot, take_no):
+    if request.method == 'POST':
+        item = get_object_or_404(FootageTake, take_scene=take_scene, take_shot=take_shot, take_no=take_no, footage_id=footage_id)
+        item.delete()
+        messages.info(request, "take removed !!!")
+        return redirect('Footage_Editor', footage_id)
+
+def editFootageTake(request, footage_id, take_scene, take_shot, take_no):
+    if request.method == 'POST':
+        link = get_object_or_404(FootageTake, take_scene=take_scene, take_shot=take_shot, take_no=take_no, footage_id=footage_id)
+        take = get_object_or_404(FootageTake, take_scene=take_scene, take_shot=take_shot, take_no=take_no)
+        form = TakeInFootageForm(request.POST)
+        
+        # save other information
+        dt = datetime.datetime.strptime(form.data['start_time'], "%H:%M:%S")  # string to datetime conversion
+        total_sec = dt.hour*3600 + dt.minute*60 + dt.second  # total seconds calculation
+        time = datetime.timedelta(seconds=total_sec) 
+        link.start_time = time
+
+        if form.is_valid():
+            # save the form data to model
+            link.save()
+            form.save()
+            messages.info(request, "take modified !!!")
+        else:
+            messages.error(request, 'Please correct the following errors:')
+        return redirect('Footage_Editor', footage_id)
+
+def deleteTake(request, shot_scene, shot_name, take_no, redirect_footage=None):
+    if request.method == 'POST':
+        item = get_object_or_404(Take, shot_scene=shot_scene, shot_name=shot_name, take_no=take_no)
+        item.delete()
+        messages.info(request, "take removed !!!")
+    if redirect_footage:
+        return redirect('Footage_Editor', redirect_footage)
+    else:
+        return redirect('index')
