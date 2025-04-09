@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.core.files.storage import default_storage
 from django.contrib import messages
+from django.views.generic.edit import DeleteView
+from django.urls import reverse_lazy
+
 
 import datetime
 
@@ -87,12 +90,9 @@ def viewScenes(request):
     context = {"list": scene_list, "form": form}
     return render(request, "scene_list.html", context)
 
-def deleteScene(request, script_number):
-    if request.method == 'POST':
-        item = get_object_or_404(Scene, script_number=script_number)
-        item.delete()
-        messages.info(request, "scene removed !!!")
-    return redirect('View_Scenes')
+class SceneDeleteView(DeleteView):
+    model = Scene
+    success_url = reverse_lazy('View_Scenes')
 
 def editScene(request, script_number):
     scene = get_object_or_404(Scene, script_number=script_number)
