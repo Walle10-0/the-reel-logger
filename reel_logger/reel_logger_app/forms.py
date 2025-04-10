@@ -1,6 +1,6 @@
 from django import forms
 
-from reel_logger_app.models import Footage, Take, Scene, Shot, FootageTake
+from reel_logger_app.models import Footage, Take, Scene, Shot, FootageTake, Comment
  
 # create a ModelForm
 class FootageForm(forms.ModelForm):
@@ -33,6 +33,12 @@ class ShotForm(forms.ModelForm):
     class Meta:
         model = Shot
         fields = "__all__"
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = "__all__"
+        exclude = ['footage']
 
 class ShotInSceneForm(forms.ModelForm):
     class Meta:

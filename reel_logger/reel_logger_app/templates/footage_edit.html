@@ -41,7 +41,29 @@
             <button type="submit">Submit</button>
         </form>
         <h2>Comments</h2>
+        <ul>
+          {% for comment in comments %}
+            <li>
+              <form action="{% url 'Edit_Comment' comment.instance.pk %}" method="POST">
+                {% csrf_token %}
+                {{comment}}
+                <button type="submit">Edit</button>
+              </form>
+              <form action="{% url 'Delete_Comment' comment.instance.pk %}" method="POST">
+                {% csrf_token %}
+                <button type="submit">Delete</button>
+              </form>
+            </li>
+          {% endfor %}
+      </ul>
         <h3>Add Comment</h3>
+        <form action="{% url 'Add_Comment_To_Footage' form.instance.pk %}" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div>
+            {{comment_to_footage}}
+          </div>
+          <button type="submit">Submit</button>
+      </form>
     </div>
 </body>
 </html>

@@ -2,13 +2,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.core.files.storage import default_storage
 from django.contrib import messages
-from django.views.generic.edit import DeleteView
+from django.views.generic.edit import DeleteView, UpdateView
 from django.urls import reverse_lazy
+from django.urls import reverse as urlreverse
 
 import datetime
 
 from reel_logger_app.models import Footage, Comment, Scene, Shot, Take, FootageTake
-from reel_logger_app.forms import FootageForm, TakeForm, SceneForm, ShotForm, NewSceneForm, ShotInSceneForm, AddTakeToFootageForm, TakeInFootageForm
+from reel_logger_app.forms import FootageForm, TakeForm, SceneForm, ShotForm, NewSceneForm, ShotInSceneForm, AddTakeToFootageForm, TakeInFootageForm, CommentForm
 
 def simple_save_if_valid(form, request):
     # check if form data is valid
@@ -59,6 +60,7 @@ def editFootage(request, footage_id):
         form = FootageForm(instance=footage)
     
     take_to_footage = AddTakeToFootageForm(initial={'footage': footage})
+    comment_to_footage = CommentForm(initial={'footage': footage})
 
     # get all take forms
     all_takes = []
@@ -66,8 +68,17 @@ def editFootage(request, footage_id):
         start = FootageTake.objects.get(footage=footage, take=take).start_time
         newTakeForm = TakeInFootageForm(instance=take, initial={"start_time": start})
         all_takes.append(newTakeForm)
+    
+    # make all comment forms
+    comment_forms = []
+    for comment in Comment.objects.filter(footage=footage).order_by("time"):
+        newCommentForm = CommentForm(instance=comment)
+        comment_forms.append(newCommentForm)
 
-    context = {'form': form, "take_to_footage": take_to_footage, "takes": all_takes}
+    context = {'form': form, "take_to_footage": take_to_footage,
+               "comment_to_footage": comment_to_footage,
+               "takes": all_takes,
+               "comments": comment_forms}
     return render(request, "footage_edit.html", context)
 
 class FootageDeleteView(DeleteView):
@@ -150,6 +161,8 @@ def editShot(request, scene_id, shot):
         form = ShotForm(request.POST, instance=shot)
 
         simple_save_if_valid(form, request)
+
+        return redirect('Scene_Editor', scene_id)
     else:
         form = ShotForm(instance=shot)
     
@@ -207,4 +220,22 @@ def editFootageTake(request, footage_id, take_scene, take_shot, take_no):
 
 class CommentDeleteView(DeleteView):
     model = Comment
-    success_url = reverse_lazy('View_Footage')
+
+    def get_success_url(self):
+        return urlreverse('Footage_Editor', kwargs={'footage_id': self.object.footage_id})
+
+class CommentUpdateView(UpdateView):
+    model = Comment
+    fields = ['time', 'comment']
+
+    def get_success_url(self):
+        return urlreverse('Footage_Editor', kwargs={'footage_id': self.object.footage_id})
+
+def addCommentToFootage(request, footage_id):
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        form.instance.footage_id = footage_id
+
+        simple_save_if_valid(form, request)
+
+    return redirect('Footage_Editor', footage_id)
