@@ -1,14 +1,39 @@
 <!DOCTYPE html>
 <html>
 <body>
-    <h1>Footage List</h1>
-    <ul>
-        {% for footage in list %}
-          <li>
-            <a href="{% url 'Footage_Editor' footage.id %}">{{ footage.filename }}</a> 
-          </li>
-        {% endfor %}
-    </ul>
-    <a href="{% url 'File_Uploads' %}">Upload Footage</a> 
+  <h1>Footage List</h1>
+  <div>
+    <table>
+      <tr>
+        <th>FileName</th>
+        <th>Length</th>
+        <th>Audio</th>
+        <th>Video</th>
+        <th>Takes</th>
+        <th>Marked</th>
+        <th>Average Rating</th>
+        <th>Max Rating</th>
+      </tr>
+      {% for footage in list %}
+        <tr onclick="window.location='{% url 'Footage_Editor' footage.id %}';">
+          <th>{{ footage.filename }}</th>
+          <th>{{ footage.length }}</th>
+          <th>{{ footage.has_audio }}</th>
+          <th>{{ footage.has_video }}</th>
+          <th>{% for take in footage.take_set.all %}
+            {% ifchanged %}({{take.shot_scene.script_number}}{{take.shot_name}}:{{take.take_no}}){% endifchanged %}
+            {% endfor %}
+          </th>
+          <th>{% for take in footage.take_set.all %}
+            {% ifchanged %}({{take.marked_scene}}{{take.marked_shot}}:{{take.marked_take}}){% endifchanged %}
+            {% endfor %}
+          </th>
+          <th>{{ footage.average_rating }}</th>
+          <th>{{ footage.max_rating }}</th>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+  <a href="{% url 'File_Uploads' %}">Upload Footage</a> 
 </body>
 </html>

@@ -21,6 +21,22 @@ class Footage(models.Model):
     @property
     def filename(self):
         return self.path.split('/')[-1]
+    
+    @property
+    def average_rating(self):
+        ratings = list(self.take_set.values_list('rating', flat=True))
+        if len(ratings) != 0:
+            return sum(ratings) / len(ratings)
+        else:
+            return 0
+    
+    @property
+    def max_rating(self):
+        ratings = list(self.take_set.values_list('rating', flat=True))
+        if len(ratings) != 0:
+            return max(ratings)
+        else:
+            return 0
 
     def save(self, *args, **kwargs):
         print(self.path)
