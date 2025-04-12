@@ -5,7 +5,7 @@
     <ul>
         {% for footage in list %}
           <li>
-            <a href="{% url 'Footage_Editor' footage.id %}">{{ footage }}</a> 
+            <a href="{% url 'Footage_Editor' footage.id %}">{{ footage.filename }}</a> 
           </li>
         {% endfor %}
     </ul>

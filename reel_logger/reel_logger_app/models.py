@@ -18,6 +18,10 @@ class Footage(models.Model):
     # takes in 'take_set' 
     # footagetake in 'footagetake_set' (I think)
 
+    @property
+    def filename(self):
+        return self.path.split('/')[-1]
+
     def save(self, *args, **kwargs):
         print(self.path)
         with open(self.path, "rb") as file:
