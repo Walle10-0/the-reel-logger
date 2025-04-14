@@ -59,3 +59,8 @@ class TakeInFootageForm(forms.ModelForm):
         model = Take
         fields = "__all__"
         exclude = ['footage', 'shot_scene', 'shot_name', 'take_no']
+
+class FootageSearch(forms.Form):
+    scene = forms.IntegerField(required=False, min_value=0, max_value=255)
+    shot = forms.CharField(max_length=64, required=False)
+    take = forms.IntegerField(required=False, min_value=0, max_value=255)

@@ -9,7 +9,7 @@ from django.urls import reverse as urlreverse
 import datetime
 
 from reel_logger_app.models import Footage, Comment, Scene, Shot, Take, FootageTake
-from reel_logger_app.forms import FootageForm, TakeForm, SceneForm, ShotForm, NewSceneForm, ShotInSceneForm, AddTakeToFootageForm, TakeInFootageForm, CommentForm
+from reel_logger_app.forms import FootageForm, SceneForm, ShotForm, NewSceneForm, ShotInSceneForm, AddTakeToFootageForm, TakeInFootageForm, CommentForm, FootageSearch
 
 def simple_save_if_valid(form, request):
     # check if form data is valid
@@ -45,9 +45,30 @@ def fileupload(request):
 # ------------ footage ------------------
 
 def viewFootage(request):
-    footage_list = Footage.objects.order_by("path")
+    footage_list = Footage.objects.all()
 
-    context = {"list": footage_list}
+    if request.method == 'GET':
+        form = FootageSearch(request.GET)
+    else:
+        form = FootageSearch()
+    
+    if form.is_valid():
+        if form['scene'].value():
+            query1 = footage_list.filter(take__shot_scene_id=form['scene'].value()).distinct()
+            query2 = footage_list.filter(take__marked_scene=form['scene'].value()).distinct()
+            footage_list = query1 | query2
+        if form['shot'].value():
+            query1 = footage_list.filter(take__shot_name=form['shot'].value()).distinct()
+            query2 = footage_list.filter(take__marked_shot=form['shot'].value()).distinct()
+            footage_list = query1 | query2
+        if form['take'].value():
+            query1 = footage_list.filter(take__take_no=form['take'].value()).distinct()
+            query2 = footage_list.filter(take__marked_take=form['take'].value()).distinct()
+            footage_list = query1 | query2
+
+    footage_list.order_by("path")
+
+    context = {"list": footage_list, "form":form}
     return render(request, "footage_list.html", context)
 
 def editFootage(request, footage_id):

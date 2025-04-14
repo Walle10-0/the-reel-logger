@@ -1,7 +1,19 @@
 <!DOCTYPE html>
 <html>
 <body>
-  <h1>Footage List</h1>
+  <h1>Footage</h1>
+  <div>
+    <h2>Search</h2>
+    <form method="GET" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div>
+        {{form}}
+      </div>
+      <button type="submit">Submit</button>
+    </form>
+    <a href="{% url 'View_Footage' %}">Reset</a> 
+  </div>
+  <h2>List</h2>
   <div>
     <table>
       <tr>
