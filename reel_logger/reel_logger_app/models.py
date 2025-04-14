@@ -14,6 +14,7 @@ class Footage(models.Model):
     has_audio = models.BooleanField(default=False)
     has_video = models.BooleanField(default=False)
     notes = models.TextField(blank=True)
+    logged = models.BooleanField(default=False)
 
     # takes in 'take_set' 
     # footagetake in 'footagetake_set' (I think)
