@@ -2,7 +2,7 @@
     <div>
         <a href="{% url 'View_Footage' %}">All Footage</a> 
     </div>
-    <div class="container center">
+    <div>
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <div>
@@ -63,5 +63,4 @@
           <button type="submit">Submit</button>
       </form>
     </div>
-</body>
-</html>
+{% include "footer.html" %}

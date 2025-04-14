@@ -1,8 +1,21 @@
 body {
     background-color: lightblue;
+    margin: 0;
 }
   
 h1 {
     color: navy;
-    margin-left: 20px;
+}
+
+.header {
+    width: 100%;
+    display: flex;
+    margin: 0;
+    padding: 10px;
+    grid-gap: 30px;
+    background-color: white;
+}
+
+.body {
+    margin: 10px;
 }
