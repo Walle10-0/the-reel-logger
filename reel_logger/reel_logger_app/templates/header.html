@@ -1,0 +1,13 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head> 
+        <link rel="stylesheet" href="{% static 'template.css' %}">
+    </head> 
+    <body>
+        <header> 
+            Footage Logger
+            <a href="{% url 'View_Scenes' %}">View Scenes</a> 
+            <a href="{% url 'View_Footage' %}">View Footage</a> 
+            <a href="{% url 'File_Uploads' %}">Upload Footage</a> 
+        </header>

@@ -23,6 +23,7 @@ def simple_save_if_valid(form, request):
 def index(request):
     return render(request, "index.html")
 
+# fix null error
 def fileupload(request):    
     if request.method == 'POST':
         first = ""
