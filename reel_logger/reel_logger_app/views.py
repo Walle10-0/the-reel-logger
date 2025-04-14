@@ -23,7 +23,6 @@ def simple_save_if_valid(form, request):
 def index(request):
     return render(request, "index.html")
 
-# fix null error
 def fileupload(request):    
     if request.method == 'POST':
         first = ""
@@ -39,8 +38,9 @@ def fileupload(request):
 
             if first == "":
                 first = str(newfoot.id) + "/edit/"
-        messages.success(request, 'The files have been uploaded successfully.')
-        return redirect(first)
+        if first != "":
+            messages.success(request, 'The files have been uploaded successfully.')
+            return redirect(first)
     return render(request, "upload.html")
 
 # ------------ footage ------------------
