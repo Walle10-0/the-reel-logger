@@ -4,6 +4,7 @@ import datetime
 import ffmpeg
 from django.core.files import File
 from reel_logger.settings import MEDIA_ROOT
+import os
 
 def get_footage_root():
     return MEDIA_ROOT + "footage/"
@@ -54,7 +55,7 @@ class Footage(models.Model):
 
                 if video:
                     self.has_video = True
-                    ffmpeg.input(self.path).output("tmp.mp4").run()
+                    ffmpeg.input(self.path).output("tmp.mp4").run(overwrite_output=True)
                     with open("tmp.mp4", 'rb') as f:
                         self.preview.save(f'{self.hash}.mp4', File(f), save=False)
                 else:
@@ -62,7 +63,7 @@ class Footage(models.Model):
                 if audio:
                     self.has_audio = True
                     if not video:
-                        ffmpeg.input(self.path).output("tmp.mp3").run()
+                        ffmpeg.input(self.path).output("tmp.mp3").run(overwrite_output=True)
                         with open("tmp.mp3", 'rb') as f:
                             self.preview.save(f'{self.hash}.mp3', File(f), save=False)
                 else:
@@ -73,6 +74,12 @@ class Footage(models.Model):
     # custom print method
     def __str__(self):
         return "Footage('" + str(self.path) + "')"
+    
+    def delete(self, *args, **kwargs):
+        if os.path.exists(self.path):
+            os.remove(self.path)
+        self.preview.delete(save=False)
+        super(Footage, self).delete(*args, **kwargs)
 
 class Comment(models.Model):
     footage = models.ForeignKey(Footage, on_delete=models.CASCADE)

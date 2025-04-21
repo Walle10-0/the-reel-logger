@@ -37,10 +37,16 @@ def fileupload(request):
             full_filename = default_storage.location + '/' + new_filename
             print(full_filename)
 
-            newfoot = Footage.objects.create(path=full_filename)
+            try:
+                newfoot = Footage.objects.create(path=full_filename)
 
-            if first == "":
-                first = newfoot.id
+                if first == "":
+                    first = newfoot.id
+            except Exception as e:
+                print(f"An error occurred: {e}")
+                print("making footage failed")
+                default_storage.delete(new_filename)
+
         if first != "":
             messages.success(request, 'The files have been uploaded successfully.')
             return redirect('Footage_Editor', first)
