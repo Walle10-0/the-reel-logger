@@ -178,3 +178,4 @@ secret.toml
 
 # vscode
 /.vscode/
+tmp.*
