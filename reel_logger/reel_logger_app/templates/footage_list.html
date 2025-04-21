@@ -26,20 +26,20 @@
       </tr>
       {% for footage in list %}
         <tr onclick="window.location='{% url 'Footage_Editor' footage.id %}';">
-          <th>{{ footage.filename }}</th>
-          <th>{{ footage.length }}</th>
-          <th>{{ footage.has_audio }}</th>
-          <th>{{ footage.has_video }}</th>
-          <th>{% for take in footage.take_set.all %}
+          <td>{{ footage.filename }}</td>
+          <td>{{ footage.length }}</td>
+          <td>{{ footage.has_audio }}</td>
+          <td>{{ footage.has_video }}</td>
+          <td>{% for take in footage.take_set.all %}
             {% ifchanged %}({{take.shot_scene.script_number}}{{take.shot_name}}:{{take.take_no}}){% endifchanged %}
             {% endfor %}
-          </th>
-          <th>{% for take in footage.take_set.all %}
+          </td>
+          <td>{% for take in footage.take_set.all %}
             {% ifchanged %}({{take.marked_scene}}{{take.marked_shot}}:{{take.marked_take}}){% endifchanged %}
             {% endfor %}
-          </th>
-          <th>{{ footage.average_rating }}</th>
-          <th>{{ footage.max_rating }}</th>
+          </td>
+          <td>{{ footage.average_rating }}</td>
+          <td>{{ footage.max_rating }}</td>
         </tr>
       {% endfor %}
     </table>

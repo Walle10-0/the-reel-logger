@@ -1,10 +1,24 @@
 body {
-    background-color: lightblue;
+    background-color: lightcyan;
     margin: 0;
 }
   
 h1 {
     color: navy;
+}
+
+table, th, td {
+    border: 1px solid;
+    padding: 5px;
+}
+
+table {
+    border-collapse: collapse;
+    background-color: whitesmoke;
+}
+
+tr:nth-child(even) {
+    background-color: white;
 }
 
 .header {
