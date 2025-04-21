@@ -23,6 +23,7 @@
         <th>Marked</th>
         <th>Average Rating</th>
         <th>Max Rating</th>
+        <th>Logged</th>
       </tr>
       {% for footage in list %}
         <tr onclick="window.location='{% url 'Footage_Editor' footage.id %}';">
@@ -40,6 +41,7 @@
           </td>
           <td>{{ footage.average_rating }}</td>
           <td>{{ footage.max_rating }}</td>
+          <td>{{ footage.logged }}</td>
         </tr>
       {% endfor %}
     </table>

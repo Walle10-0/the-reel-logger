@@ -69,6 +69,10 @@ def viewFootage(request):
             query1 = footage_list.filter(take__take_no=form['take'].value()).distinct()
             query2 = footage_list.filter(take__marked_take=form['take'].value()).distinct()
             footage_list = query1 | query2
+        if form['logged_filter'].value() == '2':
+            footage_list = footage_list.filter(logged=True).distinct()
+        elif form['logged_filter'].value() == '3':
+            footage_list = footage_list.filter(logged=False).distinct()
 
     footage_list.order_by("path")
 

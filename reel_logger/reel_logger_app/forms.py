@@ -64,3 +64,4 @@ class FootageSearch(forms.Form):
     scene = forms.IntegerField(required=False, min_value=0, max_value=255)
     shot = forms.CharField(max_length=64, required=False)
     take = forms.IntegerField(required=False, min_value=0, max_value=255)
+    logged_filter = forms.ChoiceField(required=False, choices=((1, 'Logged and Unlogged'), (2, 'Logged only'), (3, 'Unlogged only')))
