@@ -24,6 +24,9 @@
         <th>Average Rating</th>
         <th>Max Rating</th>
         <th>Logged</th>
+        {% if user.is_authenticated %}
+          <th>Delete</th>
+        {% endif %}
       </tr>
       {% for footage in list %}
         <tr onclick="window.location='{% url 'Footage_Editor' footage.id %}';">
@@ -42,6 +45,14 @@
           <td>{{ footage.average_rating }}</td>
           <td>{{ footage.max_rating }}</td>
           <td>{{ footage.logged }}</td>
+          {% if user.is_authenticated %}
+            <td>
+              <form action="{% url 'Delete_Footage' footage.id %}" method="POST">
+                {% csrf_token %}
+                <button type="submit">Delete</button>
+              </form>
+            </td>
+          {% endif %}
         </tr>
       {% endfor %}
     </table>

@@ -40,10 +40,10 @@ def fileupload(request):
             newfoot = Footage.objects.create(path=full_filename)
 
             if first == "":
-                first = str(newfoot.id) + "/edit/"
+                first = newfoot.id
         if first != "":
             messages.success(request, 'The files have been uploaded successfully.')
-            return redirect(first)
+            return redirect('Footage_Editor', first)
     return render(request, "upload.html")
 
 # ------------ footage ------------------

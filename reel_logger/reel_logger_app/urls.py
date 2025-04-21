@@ -9,6 +9,7 @@ urlpatterns = [
     path('upload/', views.fileupload, name = "File_Uploads"),
     path('footage/', views.viewFootage, name = "View_Footage"),
     path("footage/<int:footage_id>/edit/", views.editFootage, name="Footage_Editor"),
+    path("footage/<int:pk>/delete/", views.FootageDeleteView.as_view(), name="Delete_Footage"),
     path("footage/<int:footage_id>/add take/", views.addTakeToFootage, name="Add_Take_To_Footage"),
     path("footage/<int:footage_id>/remove take/<int:take_scene>/<str:take_shot>/<int:take_no>/", views.deleteFootageTake, name="Remove_Take_From_Footage"),
     path("footage/<int:footage_id>/edit take/<int:take_scene>/<str:take_shot>/<int:take_no>/", views.editFootageTake, name="Edit_Take_In_Footage"),
