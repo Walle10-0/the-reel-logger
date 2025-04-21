@@ -19,6 +19,16 @@
                 <div>
                     <a href="{% url 'File_Uploads' %}">Upload Footage</a> 
                 </div>
+                <div>
+                    {% if user.is_authenticated %}
+                        <form action="{% url 'logout' %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit">Logout</button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'login' %}">Login</a> 
+                    {% endif %} 
+                </div>
             </div>
         </header>
         <div class="body">

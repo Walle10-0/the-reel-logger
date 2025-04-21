@@ -80,7 +80,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'reel_logger.wsgi.application'
 
-LOGIN_REDIRECT_URL = "/app"
+LOGIN_REDIRECT_URL = "index"
+LOGOUT_REDIRECT_URL = "index"
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases

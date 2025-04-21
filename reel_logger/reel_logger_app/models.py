@@ -42,7 +42,8 @@ class Footage(models.Model):
     def save(self, *args, **kwargs):
         print(self.path)
         with open(self.path, "rb") as file:
-            self.hash = hash(file.read()).hexdigest()
+            newhash = hash(file.read()).hexdigest()
+            self.hash = newhash
         super(Footage, self).save(*args, **kwargs)
     
     # custom print method

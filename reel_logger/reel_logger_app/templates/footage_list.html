@@ -44,5 +44,7 @@
       {% endfor %}
     </table>
   </div>
-  <a href="{% url 'File_Uploads' %}">Upload Footage</a> 
+  {% if user.is_authenticated %}
+    <a href="{% url 'File_Uploads' %}">Upload Footage</a> 
+  {% endif %} 
 {% include "footer.html" %}

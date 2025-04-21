@@ -5,6 +5,8 @@ from django.contrib import messages
 from django.views.generic.edit import DeleteView, UpdateView
 from django.urls import reverse_lazy
 from django.urls import reverse as urlreverse
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 import datetime
 
@@ -23,6 +25,7 @@ def simple_save_if_valid(form, request):
 def index(request):
     return render(request, "index.html")
 
+@login_required
 def fileupload(request):    
     if request.method == 'POST':
         first = ""
@@ -75,7 +78,7 @@ def viewFootage(request):
 def editFootage(request, footage_id):
     footage = get_object_or_404(Footage, pk=footage_id)
 
-    if request.method == 'POST':
+    if request.method == 'POST' and request.user.is_authenticated:
         form = FootageForm(request.POST, instance=footage)
         simple_save_if_valid(form, request)
     else:
@@ -103,7 +106,7 @@ def editFootage(request, footage_id):
                "comments": comment_forms}
     return render(request, "footage_edit.html", context)
 
-class FootageDeleteView(DeleteView):
+class FootageDeleteView(LoginRequiredMixin, DeleteView):
     model = Footage
     success_url = reverse_lazy('View_Footage')
 
@@ -112,7 +115,7 @@ class FootageDeleteView(DeleteView):
 def viewScenes(request):
     scene_list = Scene.objects.order_by("script_number")
 
-    if request.method == 'POST':
+    if request.method == 'POST' and request.user.is_authenticated:
         form = NewSceneForm(request.POST)
         # check if form data is valid
         if form.is_valid():
@@ -128,7 +131,7 @@ def viewScenes(request):
     context = {"list": scene_list, "form": form}
     return render(request, "scene_list.html", context)
 
-class SceneDeleteView(DeleteView):
+class SceneDeleteView(LoginRequiredMixin, DeleteView):
     model = Scene
     success_url = reverse_lazy('View_Scenes')
 
@@ -136,7 +139,7 @@ def editScene(request, script_number):
     scene = get_object_or_404(Scene, script_number=script_number)
     shot_list = Shot.objects.filter(scene=scene).order_by("shot")
 
-    if request.method == 'POST':
+    if request.method == 'POST' and request.user.is_authenticated:
         form = SceneForm(request.POST, instance=scene)
 
         simple_save_if_valid(form, request)
@@ -150,6 +153,7 @@ def editScene(request, script_number):
 
 # ------------ shot ------------------
 
+@login_required
 def createShot(request):
     if request.method == 'POST':
         form = ShotForm(request.POST)
@@ -161,6 +165,7 @@ def createShot(request):
     context = {'form': form}
     return render(request, "generic.html", context)
 
+@login_required
 def deleteShot(request, scene_id, shot):
     if request.method == 'POST':
         item = get_object_or_404(Shot, scene_id=scene_id, shot=shot)
@@ -168,6 +173,7 @@ def deleteShot(request, scene_id, shot):
         messages.info(request, "shot removed !!!")
     return redirect('Scene_Editor', scene_id)
 
+@login_required
 def addShotToScene(request, scene_id):
     if request.method == 'POST':
         form = ShotInSceneForm(request.POST)
@@ -179,7 +185,7 @@ def addShotToScene(request, scene_id):
 def editShot(request, scene_id, shot):
     shot = get_object_or_404(Shot, scene_id=scene_id, shot=shot)
 
-    if request.method == 'POST':
+    if request.method == 'POST' and request.user.is_authenticated:
         form = ShotForm(request.POST, instance=shot)
 
         simple_save_if_valid(form, request)
@@ -193,6 +199,7 @@ def editShot(request, scene_id, shot):
 
 # ------------ FootageTake ------------------
 
+@login_required
 def addTakeToFootage(request, footage_id):
     if request.method == 'POST':
         form = AddTakeToFootageForm(request.POST)
@@ -211,13 +218,15 @@ def addTakeToFootage(request, footage_id):
             messages.error(request, 'Please correct the following errors:')
     return redirect('Footage_Editor', footage_id)
 
+@login_required
 def deleteFootageTake(request, footage_id, take_scene, take_shot, take_no):
     if request.method == 'POST':
         item = get_object_or_404(FootageTake, take_scene=take_scene, take_shot=take_shot, take_no=take_no, footage_id=footage_id)
         item.delete()
         messages.info(request, "take removed !!!")
-        return redirect('Footage_Editor', footage_id)
+    return redirect('Footage_Editor', footage_id)
 
+@login_required
 def editFootageTake(request, footage_id, take_scene, take_shot, take_no):
     if request.method == 'POST':
         link = get_object_or_404(FootageTake, take_scene=take_scene, take_shot=take_shot, take_no=take_no, footage_id=footage_id)
@@ -236,23 +245,24 @@ def editFootageTake(request, footage_id, take_scene, take_shot, take_no):
             messages.info(request, "take modified !!!")
         else:
             messages.error(request, 'Please correct the following errors:')
-        return redirect('Footage_Editor', footage_id)
+    return redirect('Footage_Editor', footage_id)
 
 # ------------ Comment ------------------
 
-class CommentDeleteView(DeleteView):
+class CommentDeleteView(LoginRequiredMixin, DeleteView):
     model = Comment
 
     def get_success_url(self):
         return urlreverse('Footage_Editor', kwargs={'footage_id': self.object.footage_id})
 
-class CommentUpdateView(UpdateView):
+class CommentUpdateView(LoginRequiredMixin, UpdateView):
     model = Comment
     fields = ['time', 'comment']
 
     def get_success_url(self):
         return urlreverse('Footage_Editor', kwargs={'footage_id': self.object.footage_id})
 
+@login_required
 def addCommentToFootage(request, footage_id):
     if request.method == 'POST':
         form = CommentForm(request.POST)
