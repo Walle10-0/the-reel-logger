@@ -1,7 +1,8 @@
 from django.db import models
 from hashlib import md5 as hash
 import datetime 
-
+import ffmpeg
+from django.core.files import File
 from reel_logger.settings import MEDIA_ROOT
 
 def get_footage_root():
@@ -15,6 +16,7 @@ class Footage(models.Model):
     has_video = models.BooleanField(default=False)
     notes = models.TextField(blank=True)
     logged = models.BooleanField(default=False)
+    preview = models.FileField(upload_to='previews/', blank=True, null=True, editable=False)
 
     # takes in 'take_set' 
     # footagetake in 'footagetake_set' (I think)
@@ -43,7 +45,29 @@ class Footage(models.Model):
         print(self.path)
         with open(self.path, "rb") as file:
             newhash = hash(file.read()).hexdigest()
-            self.hash = newhash
+            if newhash != self.hash:
+                print("hash changed! recalculate video")
+                self.hash = newhash
+
+                audio = ffmpeg.probe(self.path, select_streams='a')['streams']
+                video = ffmpeg.probe(self.path, select_streams='v')['streams']
+
+                if video:
+                    self.has_video = True
+                    ffmpeg.input(self.path).output("tmp.mp4").run()
+                    with open("tmp.mp4", 'rb') as f:
+                        self.preview.save(f'{self.hash}.mp4', File(f), save=False)
+                else:
+                    self.has_video = False
+                if audio:
+                    self.has_audio = True
+                    if not video:
+                        ffmpeg.input(self.path).output("tmp.mp3").run()
+                        with open("tmp.mp3", 'rb') as f:
+                            self.preview.save(f'{self.hash}.mp3', File(f), save=False)
+                else:
+                    self.has_audio = False
+
         super(Footage, self).save(*args, **kwargs)
     
     # custom print method
