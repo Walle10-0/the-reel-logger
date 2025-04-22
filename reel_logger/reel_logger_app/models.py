@@ -54,6 +54,7 @@ class Footage(models.Model):
             return 0
     
     def move(self, new_path):
+        print(new_path)
         try :
             os.rename(self.path, new_path)
             print("Source path renamed to destination path successfully.")

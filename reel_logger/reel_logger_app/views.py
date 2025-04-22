@@ -12,6 +12,7 @@ import datetime
 
 from reel_logger_app.models import Footage, Comment, Scene, Shot, Take, FootageTake
 from reel_logger_app.forms import FootageForm, SceneForm, ShotForm, NewSceneForm, ShotInSceneForm, AddTakeToFootageForm, TakeInFootageForm, CommentForm, FootageSearch, FormatSettings
+from reel_logger_app.directoryFormatter import formatFootageDirectory
 
 def simple_save_if_valid(form, request):
     # check if form data is valid
@@ -62,7 +63,11 @@ def fileupload(request):
 def formatDirectory(request):
     if request.method == 'POST':
         form = FormatSettings(request.POST)
-    return redirect('settings')
+
+        if form.is_valid():
+            footage_list = Footage.objects.all()
+            formatFootageDirectory(form, footage_list)
+    return redirect('logger_settings')
 
 # ------------ footage ------------------
 
