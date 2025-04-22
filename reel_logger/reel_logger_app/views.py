@@ -31,6 +31,7 @@ def fileupload(request):
         first = ""
         for file in request.FILES.getlist('posts'):
             print(file)
+            original_filename = file.name.rsplit(".", 1)[-1]
 
             new_filename = default_storage.generate_filename("footage/unlogged/" + file.name)
             new_filename = default_storage.save(new_filename, file)
@@ -38,7 +39,7 @@ def fileupload(request):
             print(full_filename)
 
             try:
-                newfoot = Footage.objects.create(path=full_filename)
+                newfoot = Footage.objects.create(path=full_filename, original_filename=original_filename)
 
                 if first == "":
                     first = newfoot.id

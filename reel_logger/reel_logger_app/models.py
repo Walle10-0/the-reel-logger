@@ -23,6 +23,7 @@ class Footage(models.Model):
     notes = models.TextField(blank=True)
     logged = models.BooleanField(default=False)
     preview = models.FileField(upload_to='previews/', blank=True, null=True, editable=False)
+    original_filename = models.CharField(max_length=32, blank=True, default="", editable=False)
 
     # takes in 'take_set' 
     # footagetake in 'footagetake_set' (I think)
