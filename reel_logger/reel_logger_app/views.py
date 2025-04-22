@@ -11,7 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 import datetime
 
 from reel_logger_app.models import Footage, Comment, Scene, Shot, Take, FootageTake
-from reel_logger_app.forms import FootageForm, SceneForm, ShotForm, NewSceneForm, ShotInSceneForm, AddTakeToFootageForm, TakeInFootageForm, CommentForm, FootageSearch
+from reel_logger_app.forms import FootageForm, SceneForm, ShotForm, NewSceneForm, ShotInSceneForm, AddTakeToFootageForm, TakeInFootageForm, CommentForm, FootageSearch, FormatSettings
 
 def simple_save_if_valid(form, request):
     # check if form data is valid
@@ -27,7 +27,8 @@ def index(request):
 
 @login_required
 def settings(request):
-    return render(request, "settings.html")
+    context = {'formatter': FormatSettings()}
+    return render(request, "settings.html", context)
 
 @login_required
 def fileupload(request):    
@@ -60,7 +61,7 @@ def fileupload(request):
 @login_required
 def formatDirectory(request):
     if request.method == 'POST':
-        pass
+        form = FormatSettings(request.POST)
     return redirect('settings')
 
 # ------------ footage ------------------

@@ -65,3 +65,14 @@ class FootageSearch(forms.Form):
     shot = forms.CharField(max_length=64, required=False)
     take = forms.IntegerField(required=False, min_value=0, max_value=255)
     logged_filter = forms.ChoiceField(required=False, choices=((1, 'Logged and Unlogged'), (2, 'Logged only'), (3, 'Unlogged only')))
+
+class FormatSettings(forms.Form):
+    include_uid = forms.BooleanField(required=True, initial=True, help_text="Recommended True")
+    include_hash = forms.BooleanField(required=True, initial=False, help_text="Recommended False")
+    include_original_filename = forms.BooleanField(required=True, initial=True)
+    base_takes_on = forms.ChoiceField(required=True, choices=((1, 'True Take'), (2, 'Marked Take First')))
+    include_take_in_filename = forms.BooleanField(required=True, initial=True)
+    for_multiple_takes_use = forms.ChoiceField(required=True, choices=((1, 'First Take'), (2, 'Last Take'), (3, 'Median Take')))
+    sort_folders_by = forms.ChoiceField(required=True, choices=((1, 'None'), (2, 'Scene'), (3, 'Scene and Shot'), (3, 'Scene, Shot, and Take')))
+    include_rating = forms.ChoiceField(required=True, choices=((1, 'No'), (2, 'As number'), (3, 'As symbol')))
+    use_rating = forms.ChoiceField(required=False, choices=((1, 'Average (rounded)'), (2, 'Max')))
