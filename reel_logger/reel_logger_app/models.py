@@ -1,12 +1,8 @@
 import os
 from datetime import timedelta
-from math import ceil
 from hashlib import md5 as hash
 
 from django.db import models
-from django.core.files import File
-
-import ffmpeg
 
 from reel_logger.settings import MEDIA_ROOT
 from reel_logger_app.previewHandler import generate_preview
@@ -137,6 +133,4 @@ class FootageTake(models.Model):
                                 from_fields=("take_scene", "take_shot", "take_no"),
                                 to_fields=("shot_scene", "shot_name", "take_no"))
 
-    start_time = models.DurationField()
-
-
+    start_time = models.DurationField(blank=True, default=timedelta(0))
