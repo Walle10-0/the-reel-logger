@@ -52,6 +52,22 @@ class Footage(models.Model):
             return max(ratings)
         else:
             return 0
+    
+    def move(self, new_path):
+        try :
+            os.rename(self.path, new_path)
+            print("Source path renamed to destination path successfully.")
+            self.path = new_path
+
+        except Exception as error:
+            print(error)
+        
+        with open(self.path, "rb") as file:
+            newhash = hash(file.read()).hexdigest()
+            if newhash != self.hash:
+                print("hash changed!")
+        
+        self.save()
 
     def save(self, *args, **kwargs):
         print(self.path)
