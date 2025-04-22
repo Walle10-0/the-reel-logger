@@ -1,10 +1,15 @@
-from django.db import models
-from hashlib import md5 as hash
-import datetime 
-import ffmpeg
-from django.core.files import File
-from reel_logger.settings import MEDIA_ROOT
 import os
+from datetime import timedelta
+from math import ceil
+from hashlib import md5 as hash
+
+from django.db import models
+from django.core.files import File
+
+import ffmpeg
+
+from reel_logger.settings import MEDIA_ROOT
+
 
 def get_footage_root():
     return MEDIA_ROOT + "footage/"
@@ -12,7 +17,7 @@ def get_footage_root():
 class Footage(models.Model):
     path = models.FilePathField(path=get_footage_root, blank=False, null=False, recursive=True, unique=True)
     hash = models.CharField(max_length=32, blank=True, editable=False)
-    length = models.DurationField(blank=True, default=datetime.timedelta(0))
+    length = models.DurationField(blank=True, default=timedelta(0))
     has_audio = models.BooleanField(default=False)
     has_video = models.BooleanField(default=False)
     notes = models.TextField(blank=True)
@@ -42,6 +47,35 @@ class Footage(models.Model):
         else:
             return 0
 
+    def _get_media_info(self, input_path):
+        probe = ffmpeg.probe(input_path)
+        video_stream = next((s for s in probe['streams'] if s['codec_type'] == 'video'), None)
+        audio_stream = next((s for s in probe['streams'] if s['codec_type'] == 'audio'), None)
+
+        media_info = {
+            'has_video': video_stream is not None,
+            'has_audio': audio_stream is not None,
+        }
+
+        format_info = probe.get('format', {})
+        if 'duration' in format_info:
+            total_seconds = ceil(float(format_info['duration']))
+            media_info['duration'] = timedelta(seconds=total_seconds)
+
+        if video_stream:
+            media_info.update({
+                'width': int(video_stream['width']),
+                'height': int(video_stream['height']),
+                'framerate': eval(video_stream['r_frame_rate']),
+            })
+
+        if audio_stream:
+            media_info.update({
+                'sample_rate': int(audio_stream['sample_rate']),
+            })
+
+        return media_info
+
     def save(self, *args, **kwargs):
         print(self.path)
         with open(self.path, "rb") as file:
@@ -50,24 +84,64 @@ class Footage(models.Model):
                 print("hash changed! recalculate video")
                 self.hash = newhash
 
-                audio = ffmpeg.probe(self.path, select_streams='a')['streams']
-                video = ffmpeg.probe(self.path, select_streams='v')['streams']
+                # create preview
+                info = self._get_media_info(self.path)
+                input_stream = ffmpeg.input(self.path)
 
-                if video:
+                video_stream = input_stream.video if info.get('has_video') else None
+                audio_stream = input_stream.audio if info.get('has_audio') else None
+
+                if info.get('has_video', False):
                     self.has_video = True
-                    ffmpeg.input(self.path).output("tmp.mp4").run(overwrite_output=True)
+                    default_width = 720
+
+                    if info.get('width', default_width) > default_width:
+                        new_height = int(info.get('height') * default_width / info.get('width'))
+
+                        # Make sure new height is divisible by 2
+                        if new_height % 2 != 0:
+                            new_height += 1  # Or subtract 1 to round down
+
+                        video_stream = video_stream.filter('scale', default_width, new_height)
+                    if info.get('framerate', 24) > 24:
+                        video_stream = video_stream.filter('fps', fps=24)
+
+                    output_type = "mp4"
+
+                    input_stream.output("tmp.mp4").run(overwrite_output=True)
+
                     with open("tmp.mp4", 'rb') as f:
                         self.preview.save(f'{self.hash}.mp4', File(f), save=False)
                 else:
                     self.has_video = False
-                if audio:
+                if info.get('has_audio'):
                     self.has_audio = True
-                    if not video:
-                        ffmpeg.input(self.path).output("tmp.mp3").run(overwrite_output=True)
-                        with open("tmp.mp3", 'rb') as f:
-                            self.preview.save(f'{self.hash}.mp3', File(f), save=False)
+
+                    if info.get('sample_rate', 44100) > 44100:
+                            audio_stream = audio_stream.filter('aresample', 44100)
+
+                    if not info.get('has_video'):
+                        output_type = "mp3"
                 else:
                     self.has_audio = False
+                
+                output_args = []
+                if video_stream:
+                    output_args.append(video_stream)
+                if audio_stream:
+                    output_args.append(audio_stream)
+
+                if output_args and output_type:
+                    ffmpeg.output(*output_args, f"tmp.{output_type}").run(overwrite_output=True)
+
+                    with open(f"tmp.{output_type}", 'rb') as f:
+                        self.preview.save(f'{self.hash}.{output_type}', File(f), save=False)
+                else:
+                    print("No preview created")
+                
+                # get time
+                if 'duration' in info:
+                    self.length = info["duration"]
 
         super(Footage, self).save(*args, **kwargs)
     
