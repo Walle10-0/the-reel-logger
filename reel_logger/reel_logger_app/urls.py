@@ -6,7 +6,9 @@ from . import views
 
 urlpatterns = [
     path("", views.index, name="index"),
+    path("settings/", views.settings, name="logger_settings"),
     path('upload/', views.fileupload, name = "File_Uploads"),
+    path('format/', views.formatDirectory, name = "Format_Directory"),
     path('footage/', views.viewFootage, name = "View_Footage"),
     path("footage/<int:footage_id>/edit/", views.editFootage, name="Footage_Editor"),
     path("footage/<int:footage_id>/preview/", views.getPreview, name="Footage_Preview"),

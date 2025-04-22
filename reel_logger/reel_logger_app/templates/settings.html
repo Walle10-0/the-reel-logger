@@ -1,0 +1,15 @@
+{% include "header.html" %}
+    <h1>Home</h1>
+    <div>
+      Settings (kinda empty tbh)
+    </div>
+    <div>
+      insert information here
+    </div>
+    <div>
+      <form action="{% url 'Format_Directory' %}" method="POST">
+        {% csrf_token %}
+        Format Directory <button type="submit">Format</button>
+      </form>
+    </div>
+{% include "footer.html" %}

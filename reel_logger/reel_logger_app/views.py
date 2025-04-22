@@ -26,6 +26,10 @@ def index(request):
     return render(request, "index.html")
 
 @login_required
+def settings(request):
+    return render(request, "settings.html")
+
+@login_required
 def fileupload(request):    
     if request.method == 'POST':
         first = ""
@@ -52,6 +56,12 @@ def fileupload(request):
             messages.success(request, 'The files have been uploaded successfully.')
             return redirect('Footage_Editor', first)
     return render(request, "upload.html")
+
+@login_required
+def formatDirectory(request):
+    if request.method == 'POST':
+        pass
+    return redirect('settings')
 
 # ------------ footage ------------------
 

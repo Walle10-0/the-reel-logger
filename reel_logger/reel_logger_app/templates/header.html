@@ -20,6 +20,9 @@
                     <a href="{% url 'File_Uploads' %}">Upload Footage</a> 
                 </div>
                 <div>
+                    <a href="{% url 'logger_settings' %}">Settings</a> 
+                </div>
+                <div>
                     {% if user.is_authenticated %}
                         <form action="{% url 'logout' %}" method="post">
                             {% csrf_token %}
