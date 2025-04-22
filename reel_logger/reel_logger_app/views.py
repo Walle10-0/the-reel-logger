@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
+from django.http import FileResponse
 from django.core.files.storage import default_storage
 from django.contrib import messages
 from django.views.generic.edit import DeleteView, UpdateView
@@ -31,7 +31,7 @@ def fileupload(request):
         first = ""
         for file in request.FILES.getlist('posts'):
             print(file)
-            original_filename = file.name.rsplit(".", 1)[-1]
+            original_filename = file.name.rsplit(".", 1)[0]
 
             new_filename = default_storage.generate_filename("footage/unlogged/" + file.name)
             new_filename = default_storage.save(new_filename, file)
@@ -120,6 +120,16 @@ def editFootage(request, footage_id):
 class FootageDeleteView(LoginRequiredMixin, DeleteView):
     model = Footage
     success_url = reverse_lazy('View_Footage')
+
+def getPreview(request, footage_id):
+    footage = get_object_or_404(Footage, pk=footage_id)
+    if footage.preview:
+        filetype = footage.preview.path.rsplit(".", 1)[-1]
+
+        if filetype == 'mp4':
+            return FileResponse(footage.preview.open('rb'), content_type='video/mp4')
+        elif filetype == 'mp3':
+            return FileResponse(footage.preview.open('rb'), content_type='audio/mp3')
 
 # ------------ scene ------------------
 

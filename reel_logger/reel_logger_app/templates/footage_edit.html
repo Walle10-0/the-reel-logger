@@ -8,7 +8,21 @@
             <div>
               <h1>Footage Editor</h1>
               <div>{{form.instance.path}}</div>
+              <div>{{form.instance.original_filename}}</div>
               <div>{{form.instance.hash}}</div>
+              <div>
+                {% if form.instance.preview %}
+                  {% if form.instance.previewtype == 'mp4' %}
+                  <video controls>
+                    <source src="{% url 'Footage_Preview' form.instance.pk %}" type="video/mp4">
+                  </video>
+                  {% elif form.instance.previewtype == 'mp3' %}
+                  <audio controls>
+                    <source src="{% url 'Footage_Preview' form.instance.pk %}" type="audio/mpeg">
+                  </audio>
+                  {% endif %}
+                {% endif %} 
+              </div>
               <div>{{form.as_div}}</div>
             </div>
             <button type="submit">Submit</button>

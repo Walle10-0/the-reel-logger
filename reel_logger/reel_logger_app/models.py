@@ -28,6 +28,14 @@ class Footage(models.Model):
     @property
     def filename(self):
         return self.path.split('/')[-1]
+
+    @property
+    def filetype(self):
+        return self.path.split('.')[-1]
+    
+    @property
+    def previewtype(self):
+        return self.preview.path.split('.')[-1]
     
     @property
     def average_rating(self):
