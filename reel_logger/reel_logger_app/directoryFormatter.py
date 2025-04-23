@@ -1,3 +1,8 @@
+'''
+not related to Django
+This is a separate file I made to handle creating directories and organizing footage.
+The idea behind it is to modularize the code.
+'''
 import os
 
 from reel_logger.settings import MEDIA_ROOT
@@ -6,12 +11,15 @@ from reel_logger_app.models import Footage, Scene, Shot, Take
 def get_footage_root():
     return MEDIA_ROOT + "footage/"
 
+# small function to create the directory only if it does not exist
 def mkdir_if_not_exists(path):
     newPath = get_footage_root() + path
     if not os.path.isdir(newPath): 
         os.makedirs(newPath)
     return newPath
 
+# small function to convert rating to a symbol
+# completely arbitrary - may be changed later
 def ratingToSymbol(rating):
     if rating < -15:
         return 'XXX'
@@ -28,6 +36,7 @@ def ratingToSymbol(rating):
     else:
         return 'O'
 
+# this function makes all the directories ahead of time
 def make_all_directories(folder_sort_type):
     # create directories
     if folder_sort_type == 1:
@@ -56,6 +65,8 @@ def make_all_directories(folder_sort_type):
                 for scene, shot, take in takes:
                     mkdir_if_not_exists(f"scene{scene}/shot{scene}{shot}/take{scene}{shot}{take}")
 
+# this function finds a single take for the entire footage based on the settings
+# used in the filename and directory sorting
 def getTake(form, footage):
     scene = 0
     shot = ''
@@ -87,6 +98,7 @@ def getTake(form, footage):
 
     return scene, shot, take
 
+# generates a filename based on the filename settings
 def get_filename(form, footage, scene, shot, take):
     filename = []
     delim = '-'
@@ -114,6 +126,8 @@ def get_filename(form, footage, scene, shot, take):
 
     return f"{delim.join(filename)}.{footage.filetype}"
 
+# figures out the correct folder based on the folder settings
+# it creates it if it does not exist
 def get_folder(form, footage, scene, shot, take):
     folder_sort_type = int(form['sort_folders_by'].value())
 
@@ -130,6 +144,8 @@ def get_folder(form, footage, scene, shot, take):
         
         return newPath
 
+# simple function to move the footage
+# the hard work is done by the other functions
 def moveFootage(form, footage):
     scene, shot, take = getTake(form, footage)
     filename = get_filename(form, footage, scene, shot, take)
@@ -137,14 +153,17 @@ def moveFootage(form, footage):
     filepath = f"{filepath}/{filename}"
     footage.move(filepath)
 
+# this organizes all the footage into the proper directories
 def formatFootageDirectory(form, footage_list):
     # filter for logged footage
     if form['only_logged_footage'].value():
         footage_list = footage_list.filter(logged=True)
     
+    # create all directories ahead of time if the user wants to
     if not form['only_create_used_directories'].value():
         make_all_directories(int(form['sort_folders_by'].value()))
 
+    # move all the footage
     for footage in footage_list:
         moveFootage(form, footage)
     
