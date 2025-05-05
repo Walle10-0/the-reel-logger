@@ -273,7 +273,12 @@ def addTakeToFootage(request, footage_id):
         form.instance.footage_id = footage_id
         # check if form data is valid
         if form.is_valid():
-            # create if not exists
+            # create shot if not exists
+            Shot.objects.get_or_create(
+                scene = form.instance.take_scene,
+                shot = form.instance.take_shot)
+
+            # create take if not exists
             Take.objects.get_or_create(
                 shot_scene = form.instance.take_scene,
                 shot_name = form.instance.take_shot,
