@@ -17,11 +17,17 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 secret_file = 'secret.toml'
+secret_file_path = BASE_DIR / secret_file
 
-with open(BASE_DIR / secret_file, 'r') as f:
-    SECRET = toml.load(f)
-    DJ_CONF = SECRET.get("django", {})
-    DB_CONF = SECRET.get("database", {})
+if os.path.isfile(secret_file_path):
+    with open(secret_file_path, 'r') as f:
+        SECRET = toml.load(f)
+
+else:
+    SECRET = {}
+
+DJ_CONF = SECRET.get("django", {})
+DB_CONF = SECRET.get("database", {})
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
