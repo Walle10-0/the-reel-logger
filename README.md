@@ -34,6 +34,8 @@ Install requirements
 
 copy `/reel_logger/template_secret.toml` as `/reel_logger/secret.toml`  
 
+`cp /reel_logger/template_secret.toml /reel_logger/secret.toml`  
+
 ## Step 5:  
 
 Enter appropriate `secret_key` and `media_path` into `secret.toml`  
@@ -44,8 +46,7 @@ Enter mySQL credentials into `secret.toml` under `database`
 
 ## Step 6 (option 2):
 
-In `/reel_logger/reel_logger/settings.py` in the `DATABASES` dictionary, swap the keys `default` and `alternative`  
-(You may delete the old `default` settings)
+Comment all `database` fields in `secret.toml` **except** `user` and `password`  
 
 ## Step 7:  
 
@@ -57,7 +58,7 @@ Move into `reel_logger` directory
 
 create database
 
-`python manage.py migrate`
+`python manage.py migrate`  
 
 ## Step 8 (optional):  
 
@@ -67,6 +68,6 @@ create admin user
 
 ## Step 9:  
 
-run server
+run server  
 
-`python manage.py runserver`
+`python manage.py runserver`  
