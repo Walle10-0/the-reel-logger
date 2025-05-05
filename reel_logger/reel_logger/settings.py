@@ -36,7 +36,7 @@ DB_CONF = SECRET.get("database", {})
 SECRET_KEY = DJ_CONF.get('secret_key', "django-insecure-y9zwionx8mgc6^&(x4)uds+q6dbb6r!cx8uxm67-v8d64*=s%g")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = DJ_CONF.get("debug", True)
 
 ALLOWED_HOSTS = ['.localhost', '127.0.0.1', '[::1]'] # technically insecure
 
