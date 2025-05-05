@@ -16,22 +16,25 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+secret_file = 'secret.toml'
 
-with open(BASE_DIR / 'secret.toml', 'r') as f:
+with open(BASE_DIR / secret_file, 'r') as f:
     SECRET = toml.load(f)
+    DJ_CONF = SECRET.get("django", {})
+    DB_CONF = SECRET.get("database", {})
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = SECRET['django']['secret_key']
+SECRET_KEY = DJ_CONF.get('secret_key', "django-insecure-y9zwionx8mgc6^&(x4)uds+q6dbb6r!cx8uxm67-v8d64*=s%g")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ['.localhost', '127.0.0.1', '[::1]'] # technically insecure
 
-MEDIA_ROOT = SECRET['django']['media_path']
+MEDIA_ROOT = DJ_CONF.get('media_path', '/')
 MEDIA_URL = "/media/"
 
 if not os.path.exists(MEDIA_ROOT):
@@ -87,20 +90,15 @@ LOGOUT_REDIRECT_URL = "index"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'alternative': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    'default': {
+        'ENGINE': 'django.db.backends.' + DB_CONF.get('type', 'sqlite3'),
+        'NAME': DB_CONF.get('name', BASE_DIR / 'db.sqlite3'),
+        "USER": DB_CONF.get('user', ""),
+        "PASSWORD": DB_CONF.get('password', ""),
+        "HOST": DB_CONF.get('host', ""),
+        "PORT": DB_CONF.get('port', ""),
     },
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": SECRET['database']['name'],
-        "USER": SECRET['database']['user'],
-        "PASSWORD": SECRET['database']['password'],
-        "HOST": SECRET['database']['host'],
-        "PORT": SECRET['database']['port'],
-    }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
