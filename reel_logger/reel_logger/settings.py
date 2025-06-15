@@ -38,7 +38,7 @@ SECRET_KEY = DJ_CONF.get('secret_key', "django-insecure-y9zwionx8mgc6^&(x4)uds+q
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = DJ_CONF.get("debug", True)
 
-ALLOWED_HOSTS = ['.localhost', '127.0.0.1', '[::1]'] # technically insecure
+ALLOWED_HOSTS = DJ_CONF.get("allowed_hosts", ['.localhost', '127.0.0.1', '[::1]']) # technically insecure
 
 MEDIA_ROOT = DJ_CONF.get('media_path', '/')
 MEDIA_URL = "/media/"
@@ -147,3 +147,7 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Set this to True to avoid transmitting the session and CSRF cookie over HTTP accidentally.
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
