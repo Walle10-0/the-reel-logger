@@ -35,7 +35,7 @@
                 <form action="{% url 'Edit_Take_In_Footage' form.instance.pk take.instance.shot_scene_id take.instance.shot_name take.instance.take_no %}" method="POST">
                   {% csrf_token %}
                   {{take}}
-                  <button type="submit">Edit</button>
+                  <button type="submit">Save</button>
                 </form>
                 <form action="{% url 'Remove_Take_From_Footage' form.instance.pk take.instance.shot_scene_id take.instance.shot_name take.instance.take_no %}" method="POST">
                   {% csrf_token %}
@@ -59,7 +59,7 @@
               <form action="{% url 'Edit_Comment' comment.instance.pk %}" method="POST">
                 {% csrf_token %}
                 {{comment}}
-                <button type="submit">Edit</button>
+                <button type="submit">Save</button>
               </form>
               <form action="{% url 'Delete_Comment' comment.instance.pk %}" method="POST">
                 {% csrf_token %}
