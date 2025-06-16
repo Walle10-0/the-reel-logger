@@ -311,7 +311,12 @@ def editFootageTake(request, footage_id, take_scene, take_shot, take_no):
         # get FootageTake linking take to footage
         link = get_object_or_404(FootageTake, take_scene=take_scene, take_shot=take_shot, take_no=take_no, footage_id=footage_id)
         form = TakeInFootageForm(request.POST)
-        
+
+        # fill in missing feilds
+        form.instance.shot_scene_id = take_scene
+        form.instance.shot_name = take_shot
+        form.instance.take_no = take_no
+
         # format time
         dt = datetime.datetime.strptime(form.data['start_time'], "%H:%M:%S")  # string to datetime conversion
         total_sec = dt.hour*3600 + dt.minute*60 + dt.second  # total seconds calculation
