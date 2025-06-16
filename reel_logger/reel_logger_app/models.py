@@ -16,7 +16,7 @@ from reel_logger_app.previewHandler import generate_preview
 
 
 def get_footage_root():
-    return MEDIA_ROOT + "footage/"
+    return os.path.join(MEDIA_ROOT, "footage/")
 
 class Footage(models.Model):
     # attributes for database
@@ -38,7 +38,7 @@ class Footage(models.Model):
     # returns name of the file from the path (eg. '00017.MTS')
     @property
     def filename(self):
-        return self.path.split('/')[-1]
+        return os.path.basename(self.path)
 
     # returns th type of the file (eg. '.MTS')
     @property
@@ -89,7 +89,7 @@ class Footage(models.Model):
 
     # override save so that values like the hash are auto calculated
     def save(self, *args, **kwargs):
-        print(self.path)
+        print("models.py" + self.path)
         with open(self.path, "rb") as file:
             newhash = hash(file.read()).hexdigest()
 

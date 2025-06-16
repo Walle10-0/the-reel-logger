@@ -15,6 +15,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 import datetime
+import os
+from pathlib import Path
 
 from reel_logger_app.models import Footage, Comment, Scene, Shot, Take, FootageTake
 from reel_logger_app.forms import FootageForm, SceneForm, ShotForm, NewSceneForm, ShotInSceneForm, AddTakeToFootageForm, TakeInFootageForm, CommentForm, FootageSearch, FormatSettings
@@ -51,10 +53,12 @@ def fileupload(request):
             original_filename = file.name.rsplit(".", 1)[0]
 
             # get full filename in new location
-            new_filename = default_storage.generate_filename("footage/unlogged/" + file.name)
+            try_filename = os.path.join("footage", "unlogged", file.name)
+            new_filename = default_storage.generate_filename(try_filename)
             new_filename = default_storage.save(new_filename, file)
-            full_filename = default_storage.location + '/' + new_filename
-            print(full_filename)
+            full_filename = os.path.join(default_storage.location, new_filename)
+            full_filename = str(Path(full_filename).resolve(strict=True))
+            print("views.py: " + full_filename)
 
             try:
                 # create new footage object
