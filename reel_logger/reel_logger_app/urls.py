@@ -38,4 +38,4 @@ urlpatterns = [
     path("comment/<int:pk>/delete/", views.CommentDeleteView.as_view(), name="Delete_Comment"),
     path("comment/<int:pk>/edit/", views.CommentUpdateView.as_view(), name="Edit_Comment"),
 
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
