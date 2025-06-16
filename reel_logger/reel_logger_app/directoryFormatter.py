@@ -9,7 +9,7 @@ from reel_logger.settings import MEDIA_ROOT
 from reel_logger_app.models import Footage, Scene, Shot, Take
 
 def get_footage_root():
-    return MEDIA_ROOT + "footage/"
+    return os.path.join(MEDIA_ROOT, "footage/")
 
 # small function to create the directory only if it does not exist
 def mkdir_if_not_exists(path):
@@ -55,7 +55,7 @@ def make_all_directories(folder_sort_type):
 
             # make shot directories
             for scene, shot in shots:
-                mkdir_if_not_exists(f"scene{scene}/shot{scene}{shot}")
+                mkdir_if_not_exists(os.path.join(f"scene{scene}", f"shot{scene}{shot}"))
 
             if folder_sort_type > 3:
                 # get all takes
@@ -63,7 +63,7 @@ def make_all_directories(folder_sort_type):
 
                 # make take directories
                 for scene, shot, take in takes:
-                    mkdir_if_not_exists(f"scene{scene}/shot{scene}{shot}/take{scene}{shot}{take}")
+                    mkdir_if_not_exists(os.path.join(f"scene{scene}", f"shot{scene}{shot}", f"take{scene}{shot}{take}"))
 
 # this function finds a single take for the entire footage based on the settings
 # used in the filename and directory sorting
@@ -84,17 +84,19 @@ def getTake(form, footage):
         else:
             take_set = take_set.first()
         
-        scene = take_set.shot_scene.script_number
-        shot = take_set.shot_name
-        take = take_set.take_no
+        if take_set:
+            if take_set.shot_scene:
+                scene = take_set.shot_scene.script_number
+            shot = take_set.shot_name
+            take = take_set.take_no
 
-        if form['base_takes_on'].value() == '2':
-            if take_set.marked_scene:
-                scene = take_set.marked_scene
-            if take_set.marked_shot:
-                shot = take_set.marked_shot
-            if take_set.marked_take:
-                take = take_set.marked_take
+            if form['base_takes_on'].value() == '2':
+                if take_set.marked_scene:
+                    scene = take_set.marked_scene
+                if take_set.marked_shot:
+                    shot = take_set.marked_shot
+                if take_set.marked_take:
+                    take = take_set.marked_take
 
     return scene, shot, take
 
@@ -128,7 +130,7 @@ def get_filename(form, footage, scene, shot, take):
 
 # figures out the correct folder based on the folder settings
 # it creates it if it does not exist
-def get_folder(form, footage, scene, shot, take):
+def get_folder(form, scene, shot, take):
     folder_sort_type = int(form['sort_folders_by'].value())
 
     if folder_sort_type == 1:
@@ -137,10 +139,10 @@ def get_folder(form, footage, scene, shot, take):
         newPath = mkdir_if_not_exists(f"scene{scene}")
 
         if folder_sort_type > 2:
-            newPath = mkdir_if_not_exists(f"scene{scene}/shot{scene}{shot}")
+            newPath = mkdir_if_not_exists(os.path.join(f"scene{scene}", f"shot{scene}{shot}"))
 
             if folder_sort_type > 3:
-                newPath = mkdir_if_not_exists(f"scene{scene}/shot{scene}{shot}/take{scene}{shot}{take}")
+                newPath = mkdir_if_not_exists(os.path.join(f"scene{scene}", f"shot{scene}{shot}", f"take{scene}{shot}{take}"))
         
         return newPath
 
@@ -149,8 +151,8 @@ def get_folder(form, footage, scene, shot, take):
 def moveFootage(form, footage):
     scene, shot, take = getTake(form, footage)
     filename = get_filename(form, footage, scene, shot, take)
-    filepath = get_folder(form, footage, scene, shot, take)
-    filepath = f"{filepath}/{filename}"
+    filepath = get_folder(form, scene, shot, take)
+    filepath = os.path.join(filepath, filename)
     footage.move(filepath)
 
 # this organizes all the footage into the proper directories
