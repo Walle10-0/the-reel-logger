@@ -54,7 +54,7 @@ set secret=reel_logger/secret.toml
 @echo debug = true >>  %secret%
 @echo secret_key = 'django-insecure' >>  %secret%
 @echo media_path = '%my_path%\media' >>  %secret%
-@echo allowed_hosts = ['.localhost', '127.0.0.1', '[::1]'] >>  %secret%
+@echo allowed_hosts = ['*', '.localhost', '127.0.0.1', '[::1]'] >>  %secret%
 @echo # defines database settings >>  %secret%
 @echo # optional : sqlite3 is used by default >>  %secret%
 @echo [database] >>  %secret%
@@ -69,9 +69,13 @@ cd reel_logger
 
 %python% manage.py migrate
 
+@echo [[collect static files]]
+
+%python% manage.py collectstatic
+
 @echo [[configure firewall]]
 
-set PORT=3000
+set PORT=8000
 set RULE_NAME="Open Port %PORT%"
 
 netsh advfirewall firewall show rule name=%RULE_NAME% >nul

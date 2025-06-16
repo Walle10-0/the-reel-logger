@@ -40,7 +40,7 @@ set pip=%my_path%\venv\Scripts\pip.exe
 @echo [[starting server]]
 cd reel_logger
 
-%python% manage.py runserver
+%python% manage.py runserver 0.0.0.0:8000
 
 @echo server is set up
 @pause
