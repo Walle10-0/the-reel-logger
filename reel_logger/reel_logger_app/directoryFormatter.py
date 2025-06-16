@@ -21,17 +21,17 @@ def mkdir_if_not_exists(path):
 # small function to convert rating to a symbol
 # completely arbitrary - may be changed later
 def ratingToSymbol(rating):
-    if rating < -15:
+    if rating < -20:
         return 'XXX'
     if rating < -10:
         return 'XX'
-    if rating < -5:
-        return 'X'
     if rating < 0:
+        return 'X'
+    if rating < 4:
         return 'x'
-    if rating < 5:
+    if rating < 8:
         return '^'
-    if rating < 10:
+    if rating < 11:
         return 'o'
     else:
         return 'O'
